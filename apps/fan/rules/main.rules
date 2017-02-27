@@ -14,7 +14,7 @@ object PolyhedralComplex {
 user_function isInImmaculatePosition(Polytope, Polytope){
    my($P, $Q) = @_;
    # Returns true if P\Q is non-empty and contractible
-   if (isContained($P,$Q){
+   if (isContained($P,$Q)){
       return False;
    }
    my $testComplex = setminusComplex($P,$Q);
@@ -64,12 +64,7 @@ user_function isImmaculatePair(Polytope, Polytope){
 user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
    my $PintQ = intersection($P,$Q);
-   # Since asking for the Vertices to be equal did not work as expected
-   # I check whether the intersection has as many lattice points as the 
-   # polytope we started with. This method will not (always) give the right 
-   # result if the polytopes are not lattice polytopes.
-   if($P->N_LATTICE_POINTS==$PintQ->N_LATTICE_POINTS){
-      return True;
-   }
-   return False;
+   my @vert = $P->VERTICES;
+   # foreach $v in @vert if(!$PintQ->contains($v)){return False};
+   return True;
 }
