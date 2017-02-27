@@ -17,7 +17,7 @@ user_function isInImmaculatePosition(Polytope, Polytope){
    if (isContained($P,$Q){
       return False;
    }
-   my $testComplex = setminuscomplex($P,$Q);
+   my $testComplex = setminusComplex($P,$Q);
    if($testComplex->CONTRACTIBLE){
       return True;
    }
@@ -27,13 +27,14 @@ user_function isInImmaculatePosition(Polytope, Polytope){
 user_function findRelevantShifts(Polytope, Polytope){
    my($P, $Q) = @_;
    # Finds the shifts such that P\(u+Q) != P
-   my $A = -*$P->VERTICES;
-   # TODO: Make the first column of a 11111 again
+   # The polytope of relevant shifts is equal to -P+Q.
+   my $A = (-1)*($P->VERTICES)->minor(All,~[0]);
+   $A = ones_vector($A->rows) | $A;
    my $mP = new Polytope(POINTS=>$A);
    return minkowski_sum($mP,$Q);
 }
 
-sub setminuscomplex{
+sub setminusComplex{
    my($P,$Q) = @_;
    # Creates a polyhedral complex out of P and deletes every face that intersects
    # Q nonempty
@@ -62,8 +63,12 @@ user_function isImmaculatePair(Polytope, Polytope){
 
 user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
-   my $PintQ = intersection(P,Q);
-   if($P->VERTICES==$PintQ->VERTICES){
+   my $PintQ = intersection($P,$Q);
+   # Since asking for the Vertices to be equal did not work as expected
+   # I check whether the intersection has as many lattice points as the 
+   # polytope we started with. This method will not (always) give the right 
+   # result if the polytopes are not lattice polytopes.
+   if($P->N_LATTICE_POINTS==$PintQ->N_LATTICE_POINTS){
       return True;
    }
    return False;
