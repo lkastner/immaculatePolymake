@@ -38,6 +38,8 @@ sub setminuscomplex{
    # Creates a polyhedral complex out of P and deletes every face that intersects
    # Q nonempty
    my $testComplex = new PolyhedralComplex(check_fan_objects(new Cone($P)));
+   # TODO walk through faces and delete them
+   return $testComplex;
 }
 
 sub shiftByVector{
@@ -60,5 +62,9 @@ user_function isImmaculatePair(Polytope, Polytope){
 
 user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
-   my $PintQ
+   my $PintQ = intersection(P,Q);
+   if($P->VERTICES==$PintQ->VERTICES){
+      return True;
+   }
+   return False;
 }
