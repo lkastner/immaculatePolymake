@@ -14,15 +14,30 @@ object PolyhedralComplex {
 user_function isInImmaculatePosition(Polytope, Polytope){
    my($P, $Q) = @_;
    # Returns true if P\Q is non-empty and contractible
-   # TODO
-   return True;
+   if (isContained($P,$Q){
+      return False;
+   }
+   my $testComplex = setminuscomplex($P,$Q);
+   if($testComplex->CONTRACTIBLE){
+      return True;
+   }
+   return False;
 }
 
 user_function findRelevantShifts(Polytope, Polytope){
    my($P, $Q) = @_;
    # Finds the shifts such that P\(u+Q) != P
-   my $mP = new Polytope(POINTS=>-($P->VERTICES));
+   my $A = -*$P->VERTICES;
+   # TODO: Make the first column of a 11111 again
+   my $mP = new Polytope(POINTS=>$A);
    return minkowski_sum($mP,$Q);
+}
+
+sub setminuscomplex{
+   my($P,$Q) = @_;
+   # Creates a polyhedral complex out of P and deletes every face that intersects
+   # Q nonempty
+   my $testComplex = new PolyhedralComplex(check_fan_objects(new Cone($P)));
 }
 
 sub shiftByVector{
@@ -43,3 +58,7 @@ user_function isImmaculatePair(Polytope, Polytope){
    return True;
 }
 
+user_function isContained(Polytope, Polytope){
+   my($P,$Q) = @_;
+   my $PintQ
+}
