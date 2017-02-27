@@ -47,7 +47,7 @@ sub shiftByVector{
    # Shifts Q by vector v;
    my($v, $Q) = @_;
    my $Pv = new Polytope(POINTS=>[$v]);
-   return minkowski_sum($Pv, $Q);
+   return minkowski_sum($Pv, $Q)->LATTICE_POINTS;
 }
 
 user_function isImmaculatePair(Polytope, Polytope){
@@ -65,6 +65,10 @@ user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
    my $PintQ = intersection($P,$Q);
    my @vert = $P->VERTICES;
-   # foreach $v in @vert if(!$PintQ->contains($v)){return False};
+   foreach my $v (@vert){ 
+      if(!($PintQ->contains($v))){
+         return False;
+      }
+   }
    return True;
 }
