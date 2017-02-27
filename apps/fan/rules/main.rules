@@ -21,8 +21,7 @@ user_function isInImmaculatePosition(Polytope, Polytope){
 user_function findRelevantShifts(Polytope, Polytope){
    my($P, $Q) = @_;
    # Finds the shifts such that P\(u+Q) != P
-   # TODO
-   return 0;
+   return minkowski_sum(-$P,$Q);
 }
 
 sub shiftByVector{
