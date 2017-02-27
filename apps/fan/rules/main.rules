@@ -1,0 +1,45 @@
+# Main rule file
+
+object PolyhedralComplex {
+
+   property CONTRACTIBLE : Bool;
+
+   rule CONTRACTIBLE : HOMOLOGY {
+      # TODO
+      $this->CONTRACTIBLE = True;
+   }
+
+}
+
+user_function isInImmaculatePosition(Polytope, Polytope){
+   my($P, $Q) = @_;
+   # Returns true if P\Q is non-empty and contractible
+   # TODO
+   return True;
+}
+
+user_function findRelevantShifts(Polytope, Polytope){
+   my($P, $Q) = @_;
+   # Finds the shifts such that P\(u+Q) != P
+   # TODO
+   return 0;
+}
+
+sub shiftByVector{
+   # Shifts Q by vector v;
+   my($v, $Q) = @_;
+   my $Pv = new Polytope(POINTS=>[$v]);
+   return minkowski_sum($Pv, $Q);
+}
+
+user_function isImmaculatePair(Polytope, Polytope){
+   my($P, $Q) = @_;
+   my @shifts = findRelevantShifts($P, $Q);
+   foreach my $shift (@shifts){
+      if(!isInImmaculatePosition($P, shiftByVector($shift, $Q))){
+         return False;
+      }
+   }
+   return True;
+}
+
