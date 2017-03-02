@@ -8,11 +8,11 @@ object PolyhedralComplex {
       my $homology = $this->HOMOLOGY;
       foreach my $gp (@$homology){
          if($gp->betti_number > 0){
-            $this->CONTRACTIBLE = False;
+            $this->CONTRACTIBLE = 0;
             return;
          }
       }
-      $this->CONTRACTIBLE = True;
+      $this->CONTRACTIBLE = 1;
    }
 
 }
@@ -21,7 +21,7 @@ user_function isInImmaculatePosition(Polytope, Polytope){
    my($P, $Q) = @_;
    # Returns true if P\Q is non-empty and contractible
    if (isContained($P,$Q)){
-      return False;
+      return 0;
    }
    my $testComplex = setminusComplex($P,$Q);
    return $testComplex->CONTRACTIBLE;
@@ -53,7 +53,6 @@ sub setminusComplex{
       }
    }
    my $testComplex = new PolyhedralComplex(POINTS=>$vertP, INPUT_POLYTOPES=>\@faces);
-   # TODO walk through faces and delete them
    return $testComplex;
 }
 
@@ -66,13 +65,14 @@ sub shiftByVector{
 
 user_function isImmaculatePair(Polytope, Polytope){
    my($P, $Q) = @_;
-   my $shifts = findRelevantShifts($P, $Q);
+   my $shifts = findRelevantShifts($Q, $P);
    foreach my $shift (@$shifts){
-      if(!isInImmaculatePosition($P, shiftByVector($shift, $Q))){
-         return False;
+      my $check = isInImmaculatePosition($P, shiftByVector($shift, $Q));
+      if(!$check){
+         return 0;
       }
    }
-   return True;
+   return 1;
 }
 
 user_function isContained(Polytope, Polytope){
@@ -80,8 +80,8 @@ user_function isContained(Polytope, Polytope){
    my $vert = $P->VERTICES;
    foreach my $v (@$vert){ 
       if(!($Q->contains($v))){
-         return False;
+         return 0;
       }
    }
-   return True;
+   return 1;
 }
