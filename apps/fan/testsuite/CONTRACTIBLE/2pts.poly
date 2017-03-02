@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?pm chk="58b875de"?>
+
+<object name="2pts" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.0.9" xmlns="http://www.math.tu-berlin.de/polymake/#3">
+  <property name="POINTS">
+    <m>
+      <v>1 0</v>
+      <v>1 1</v>
+    </m>
+  </property>
+  <property name="INPUT_POLYTOPES">
+    <m>
+      <v>0</v>
+      <v>1</v>
+    </m>
+  </property>
+  <property name="FAN_AMBIENT_DIM" value="2" />
+  <property name="VERTICES">
+    <m>
+      <v>1 0</v>
+      <v>1 1</v>
+    </m>
+  </property>
+  <property name="MAXIMAL_POLYTOPES">
+    <m cols="2">
+      <v>0</v>
+      <v>1</v>
+    </m>
+  </property>
+  <property name="LINEALITY_SPACE">
+    <m cols="2" />
+  </property>
+  <property name="INTERSECTION_COMPLEX">
+    <object>
+      <property name="PURE" value="true" />
+      <property name="DIM" value="0" />
+      <property name="HOMOLOGY">
+        <m>
+          <t>
+            <v />
+            <e>1</e>
+          </t>
+        </m>
+      </property>
+    </object>
+  </property>
+  <property name="CONTRACTIBLE" ext="1=immaculate" value="false" />
+</object>

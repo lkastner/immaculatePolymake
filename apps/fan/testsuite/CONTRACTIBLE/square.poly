@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?pm chk="58b8743e"?>
+
+<object name="square" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.0.9" xmlns="http://www.math.tu-berlin.de/polymake/#3">
+  <property name="POINTS">
+    <m>
+      <v>1 0 0</v>
+      <v>1 1 0</v>
+      <v>1 1 1</v>
+      <v>1 0 1</v>
+    </m>
+  </property>
+  <property name="INPUT_POLYTOPES">
+    <m>
+      <v>0 1</v>
+      <v>1 2</v>
+      <v>2 3</v>
+      <v>0 3</v>
+      <v>0 1 2 3</v>
+    </m>
+  </property>
+  <property name="FAN_AMBIENT_DIM" value="3" />
+  <property name="VERTICES">
+    <m>
+      <v>1 0 0</v>
+      <v>1 1 0</v>
+      <v>1 1 1</v>
+      <v>1 0 1</v>
+    </m>
+  </property>
+  <property name="MAXIMAL_POLYTOPES">
+    <m cols="4">
+      <v>0 1 2 3</v>
+    </m>
+  </property>
+  <property name="LINEALITY_SPACE">
+    <m cols="3" />
+  </property>
+  <property name="INTERSECTION_COMPLEX">
+    <object>
+      <property name="PURE" value="true" />
+      <property name="DIM" value="3" />
+      <property name="HOMOLOGY">
+        <m>
+          <t>
+            <v />
+            <e>0</e>
+          </t>
+          <t>
+            <v />
+            <e>0</e>
+          </t>
+          <t>
+            <v />
+            <e>0</e>
+          </t>
+          <t>
+            <v />
+            <e>0</e>
+          </t>
+        </m>
+      </property>
+    </object>
+  </property>
+  <property name="CONTRACTIBLE" ext="1=immaculate" value="true" />
+</object>
