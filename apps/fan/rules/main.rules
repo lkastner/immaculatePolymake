@@ -34,7 +34,7 @@ user_function findRelevantShifts(Polytope, Polytope){
    my $A = (-1)*($P->VERTICES)->minor(All,~[0]);
    $A = ones_vector($A->rows) | $A;
    my $mP = new Polytope(POINTS=>$A);
-   return minkowski_sum($mP,$Q);
+   return minkowski_sum($mP,$Q)->LATTICE_POINTS;
 }
 
 sub setminusComplex{
@@ -61,13 +61,13 @@ sub shiftByVector{
    # Shifts Q by vector v;
    my($v, $Q) = @_;
    my $Pv = new Polytope(POINTS=>[$v]);
-   return minkowski_sum($Pv, $Q)->LATTICE_POINTS;
+   return minkowski_sum($Pv, $Q);
 }
 
 user_function isImmaculatePair(Polytope, Polytope){
    my($P, $Q) = @_;
-   my @shifts = findRelevantShifts($P, $Q);
-   foreach my $shift (@shifts){
+   my $shifts = findRelevantShifts($P, $Q);
+   foreach my $shift (@$shifts){
       if(!isInImmaculatePosition($P, shiftByVector($shift, $Q))){
          return False;
       }
@@ -77,8 +77,8 @@ user_function isImmaculatePair(Polytope, Polytope){
 
 user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
-   my @vert = $P->VERTICES;
-   foreach my $v (@vert){ 
+   my $vert = $P->VERTICES;
+   foreach my $v (@$vert){ 
       if(!($Q->contains($v))){
          return False;
       }
