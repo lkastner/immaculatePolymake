@@ -5,7 +5,13 @@ object PolyhedralComplex {
    property CONTRACTIBLE : Bool;
 
    rule CONTRACTIBLE : HOMOLOGY {
-      # TODO
+      my $homology = $this->HOMOLOGY;
+      foreach my $gp (@$homology){
+         if($gp->betti_number > 0){
+            $this->CONTRACTIBLE = False;
+            return;
+         }
+      }
       $this->CONTRACTIBLE = True;
    }
 
@@ -18,10 +24,7 @@ user_function isInImmaculatePosition(Polytope, Polytope){
       return False;
    }
    my $testComplex = setminusComplex($P,$Q);
-   if($testComplex->CONTRACTIBLE){
-      return True;
-   }
-   return False;
+   return $testComplex->CONTRACTIBLE;
 }
 
 user_function findRelevantShifts(Polytope, Polytope){
@@ -38,7 +41,18 @@ sub setminusComplex{
    my($P,$Q) = @_;
    # Creates a polyhedral complex out of P and deletes every face that intersects
    # Q nonempty
-   my $testComplex = new PolyhedralComplex(check_fan_objects(new Cone($P)));
+   my @faces = ();
+   my $vertP = $P->VERTICES;
+   foreach my $face (@{$P->HASSE_DIAGRAM->FACES}){
+      if($face->size > 0){
+         my $honestFace = new Polytope(POINTS=>$vertP->minor($face, All));
+         my $check = intersection($Q, $honestFace);
+         if(!$check->FEASIBLE){
+            push @faces, $face;
+         }
+      }
+   }
+   my $testComplex = new PolyhedralComplex(POINTS=>$vertP, INPUT_POLYTOPES=>\@faces);
    # TODO walk through faces and delete them
    return $testComplex;
 }
@@ -63,10 +77,9 @@ user_function isImmaculatePair(Polytope, Polytope){
 
 user_function isContained(Polytope, Polytope){
    my($P,$Q) = @_;
-   my $PintQ = intersection($P,$Q);
    my @vert = $P->VERTICES;
    foreach my $v (@vert){ 
-      if(!($PintQ->contains($v))){
+      if(!($Q->contains($v))){
          return False;
       }
    }
