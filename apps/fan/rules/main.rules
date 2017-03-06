@@ -27,14 +27,12 @@ user_function isInImmaculatePosition(Polytope, Polytope){
    return $testComplex->CONTRACTIBLE;
 }
 
-user_function findRelevantShifts(Polytope, Polytope){
+user_function findPolytopeOfRelevantShifts(Polytope, Polytope){
    my($P, $Q) = @_;
    # Finds the shifts such that P\(u+Q) != P
    # The polytope of relevant shifts is equal to -P+Q.
-   my $A = (-1)*($P->VERTICES)->minor(All,~[0]);
-   $A = ones_vector($A->rows) | $A;
-   my $mP = new Polytope(POINTS=>$A);
-   return minkowski_sum($mP,$Q)->LATTICE_POINTS;
+   my $mP = scale_wrap($P, -1);
+   return minkowski_sum($mP,$Q);
 }
 
 sub setminusComplex{
@@ -65,7 +63,8 @@ sub shiftByVector{
 
 user_function isImmaculatePair(Polytope, Polytope){
    my($P, $Q) = @_;
-   my $shifts = findRelevantShifts($Q, $P);
+   my $shifts = findPolytopeOfRelevantShifts($Q, $P);
+   $shifts = $shifts->LATTICE_POINTS;
    foreach my $shift (@$shifts){
       my $check = isInImmaculatePosition($P, shiftByVector($shift, $Q));
       if(!$check){
@@ -85,3 +84,30 @@ user_function isContained(Polytope, Polytope){
    }
    return 1;
 }
+
+user_function immaculacyMatrix(Polytope, Polytope, $ , $ ){
+   my ($P,$Q,$a,$b) = @_;
+   # Checks if the pairs aP and bQ are immaculate
+   my $result = new Matrix($a,$b);
+   my %qs;
+   for (my $j =0; $j <$b; $j++){
+      $qs{$j} = scale_wrap($Q, $j);
+   }
+   for (my $i=0; $i < $a; $i++){
+      my $Pi = scale_wrap($P, $i);
+      for (my $j =0; $j <$b; $j++){
+         $result->elem($i,$j)=isImmaculatePair($Pi,$qs{$j});
+      }
+   }
+   return $result;
+}
+
+sub scale_wrap{
+   my($P, $i) = @_;
+   if($i == 0){
+      return new Polytope(POINTS=>[ones_vector(1)|zero_vector($P->DIM)]);
+   } else {
+      return scale($P, $i);
+   }
+}
+
