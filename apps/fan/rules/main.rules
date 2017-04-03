@@ -111,3 +111,75 @@ sub scale_wrap{
    }
 }
 
+####################################
+# New approach from Klaus
+
+user_function intersection_approach(Array<Set<Int> >, Matrix){
+   my($A, $M) = @_;
+   my @cones = map(build_cone_pair($_, $M), @$A);
+   @cones = map((new Polytope(POINTS=>$_)), @cones);
+   print "Building cones ok.\n";
+   build_components_recursively(@cones);
+}
+
+sub build_components_recursively{
+   my @cones = @_;
+   if(@cones == 1){
+      my $cone = pop @cones;
+      print "Done with inner.\n";
+      my @result = get_clean_antifacets_list($cone);
+      return map(new Matrix([$_]), @result);
+   } else {
+      my $cone = pop @cones;
+      print "Popped.\n";
+      my @preres = build_components_recursively(@cones);
+      my @newFacets = get_clean_antifacets_list($cone);
+      print "Got list.\n";
+      my @result;
+      foreach my $facet (@newFacets){
+         foreach my $matrix (@preres){
+            my $id = grep($_ == $facet, @$matrix);
+            if($id == 0){
+               push @result, new Matrix($matrix / $facet);
+            } else {
+               print "Found identicals!\n";
+            }
+         }
+      }
+      if(@result > 100){
+         print "Checking.\n";
+         @result = grep((new Polytope(INEQUALITIES=>$_))->FEASIBLE, @result);
+      }
+      return @result;
+   }
+}
+
+sub get_clean_antifacets_list{
+   my($cone) = @_;
+   my $facets = new Matrix<Rational>(primitive($cone->FACETS));
+   my $ezero = unit_vector<Rational>($facets->cols, 0);
+   $facets = - new Matrix(grep($_ != $ezero, @$facets));
+   my $newFacets = ($facets->minor(All, [0]) - ones_matrix($facets->rows, 1)) | $facets->minor(All, ~[0]);
+   return @$newFacets;
+}
+
+sub build_cone_pair {
+   my ($index, $M) = @_;
+   my $entire = new Set<Int>(0..($M->rows - 1));
+   my $comp = $entire - $index;
+   my $A = build_cone_from_index_set($index, $M);
+   my $B = build_cone_from_index_set($comp, $M);
+   return($A, $B);
+}
+
+sub build_cone_from_index_set{
+   my ($index, $M) = @_;
+   my $negative = - $M->minor($index, All);
+   my $positive = $M->minor(~$index, All);
+   my $root = transpose($negative) * ones_vector($negative->rows);
+   my $gens = new Matrix(zero_vector | $negative);
+   $gens /= zero_vector | $positive;
+   $gens /= ones_vector(1) | $root;
+   return $gens;
+}
+

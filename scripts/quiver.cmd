@@ -69,3 +69,22 @@ foreach my $cone (@a){
    my $int = intersection($check3, $cone);
    print "Check:",$int->FEASIBLE,"\n";
 }
+
+# contains seems to fail for lines
+@non_line_pts = grep{
+   !($check->contains($_) || $check1->contains($_) || $check2->contains($_) || $check3->contains($_))
+} @good;
+
+
+# New Polymake stuff.
+application "fan";
+$A = new Array<Set<Int> >([[0,1,2,3,4],[0,1],[0,4],[1,2],[2,3],[3,4]]);
+$M = new Matrix([
+[1,-1,0],
+[1,0,-1],
+[0,1,-1],
+[0,1, 0],
+[0,0, 1]]
+);
+@a = intersection_approach($A, $M);
+
