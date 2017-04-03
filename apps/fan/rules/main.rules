@@ -138,20 +138,28 @@ sub build_components_recursively{
       my @result;
       foreach my $facet (@newFacets){
          foreach my $matrix (@preres){
-            my $id = grep($_ == $facet, @$matrix);
-            if($id == 0){
-               push @result, new Matrix($matrix / $facet);
-            } else {
-               print "Found identicals!\n";
-            }
+            my $toadd = new Matrix($matrix / $facet);
+            $toadd = simplify_gens($toadd);
+            push @result, $toadd;
          }
       }
       if(@result > 100){
-         print "Checking.\n";
-         @result = grep((new Polytope(INEQUALITIES=>$_))->FEASIBLE, @result);
+         print "Size is: ", scalar @result, "\n";
+         my $R = new Set<Matrix<Rational> >(@result);
+         @result = @$R;
+         print "Reduced to ", scalar @result, "\n";
       }
+         # print "Checking.\n";
+         # @result = grep((new Polytope(INEQUALITIES=>$_))->FEASIBLE, @result);
+         # print "Reduced to ", scalar @result, "\n";
       return @result;
    }
+}
+
+sub simplify_gens{
+   my($mat) = @_;
+   my $gens = new Set<Vector<Rational> >(@$mat);
+   return new Matrix(sort @$gens);
 }
 
 sub get_clean_antifacets_list{
