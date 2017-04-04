@@ -114,22 +114,69 @@ sub scale_wrap{
 ####################################
 # New approach from Klaus
 
+user_function find_maculates(PolyhedralFan){
+   my($pf) = @_;
+   my @result = (new Set<Int>([]));
+   for(my $k = 1; $k<=$pf->N_RAYS; $k++){
+      my @subsets = all_subsets_of_k($k, 0..($pf->N_RAYS-1));
+      @subsets = map((new Set<Int>($_)), @subsets);
+      foreach my $s (@subsets){
+         my $subfan = select_subfan($pf, $s);
+         if(has_homology($subfan)){
+            push @result, $s;
+         }
+      }
+   }
+   return @result;
+}
+
+sub select_subfan{
+   my($fan, $s) = @_;
+   my @result = ();
+   my @faces = @{$fan->HASSE_DIAGRAM->FACES};
+   foreach my $face (@faces){
+      my $intersection = $face * $s;
+      if($intersection->size == $face->size){
+         push @result, $face;
+      }
+   }
+   if(@result > 0){
+      return new PolyhedralFan(INPUT_RAYS=>$fan->RAYS, INPUT_CONES=>\@result);
+   } else {
+      return new PolyhedralFan(INPUT_RAYS=>$fan->RAYS, INPUT_CONES=>[[]]);
+   }
+}
+
+sub has_homology{
+   my($fan) = @_;
+   if($fan->N_MAXIMAL_CONES == 0){
+      return 1;
+   }
+   my @homology = @{$fan->HOMOLOGY};
+   foreach my $gp (@homology){
+      if($gp->[1] != 0){
+         return 1;
+      }
+   }
+   return 0;
+}
+
 user_function intersection_approach(Array<Set<Int> >, Matrix){
    my($A, $M) = @_;
    my @cones = map(build_cone_pair($_, $M), @$A);
    @cones = map((new Polytope(POINTS=>$_)), @cones);
    print "Building cones ok.\n";
    my @result = build_components_recursively(@cones);
-   print scalar @result,"\n";
+   print "Size after building intersections: ",scalar @result,"\n";
    @result = map((new Set<Vector<Rational> >(@$_)), @result);
-   print scalar @result,"\n";
    @result = find_inclusion_minimals(@result);
+   print "Inclusion minimal facet combinations: ",scalar @result,"\n";
    @result = map(new Matrix(@$_), @result);
    @result = map(new Polytope(INEQUALITIES=>$_), @result);
-   return unique(@result);
+   return inclusion_maximal_polyhedra(@result);
 }
 
-sub unique {
+sub inclusion_maximal_polyhedra {
    my @polytopes = @_;
    my @result = ();
    while(@polytopes > 0){
@@ -162,15 +209,17 @@ sub build_components_recursively{
    my @cones = @_;
    if(@cones == 1){
       my $cone = pop @cones;
-      print "Done with inner.\n";
       my @result = get_clean_antifacets_list($cone);
       return map(new Matrix([$_]), @result);
    } else {
       my $cone = pop @cones;
-      print "Popped.\n";
       my @preres = build_components_recursively(@cones);
+      if($cone->LINEALITY_DIM == $cone->DIM){
+         # If the cone is everything, there will be no facets, so intersecting
+         # does nothing.
+         return @preres;
+      }
       my @newFacets = get_clean_antifacets_list($cone);
-      print "Got list.\n";
       my @result;
       foreach my $facet (@newFacets){
          foreach my $matrix (@preres){
@@ -179,15 +228,19 @@ sub build_components_recursively{
             push @result, $toadd;
          }
       }
+      # The following two ifs should just reduce the amount of matrices we are
+      # stuck with, otherwise we never finish.
       if(@result > 100){
-         print "Size is: ", scalar @result, "\n";
          my $R = new Set<Matrix<Rational> >(@result);
          @result = @$R;
-         print "Reduced to ", scalar @result, "\n";
       }
-         # print "Checking.\n";
-         # @result = grep((new Polytope(INEQUALITIES=>$_))->FEASIBLE, @result);
-         # print "Reduced to ", scalar @result, "\n";
+      if(@result > 200){
+         print "Reducing polyhedra, ",scalar @result, "\n";
+         @result = map(new Polytope(INEQUALITIES=>$_), @result);
+         @result = inclusion_maximal_polyhedra(@result);
+         @result = map($_->INEQUALITIES, @result);
+         print "Reducing done, ",scalar @result, "\n";
+      }
       return @result;
    }
 }
@@ -200,8 +253,11 @@ sub simplify_gens{
 
 sub get_clean_antifacets_list{
    my($cone) = @_;
-   print "LD: ", $cone->LINEALITY_DIM,"\n";
+   if($cone->LINEALITY_DIM > 0){
+      print "Should check lineality dim now!\n";
+   }
    my $facets = new Matrix<Rational>(primitive($cone->FACETS));
+   print "Facets: ",$facets->rows,"\n";
    my $ezero = unit_vector<Rational>($facets->cols, 0);
    $facets = - new Matrix(grep($_ != $ezero, @$facets));
    my $newFacets = ($facets->minor(All, [0]) - ones_matrix($facets->rows, 1)) | $facets->minor(All, ~[0]);
