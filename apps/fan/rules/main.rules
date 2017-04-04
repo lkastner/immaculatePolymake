@@ -119,7 +119,43 @@ user_function intersection_approach(Array<Set<Int> >, Matrix){
    my @cones = map(build_cone_pair($_, $M), @$A);
    @cones = map((new Polytope(POINTS=>$_)), @cones);
    print "Building cones ok.\n";
-   build_components_recursively(@cones);
+   my @result = build_components_recursively(@cones);
+   print scalar @result,"\n";
+   @result = map((new Set<Vector<Rational> >(@$_)), @result);
+   print scalar @result,"\n";
+   @result = find_inclusion_minimals(@result);
+   @result = map(new Matrix(@$_), @result);
+   @result = map(new Polytope(INEQUALITIES=>$_), @result);
+   return unique(@result);
+}
+
+sub unique {
+   my @polytopes = @_;
+   my @result = ();
+   while(@polytopes > 0){
+      my $current = pop @polytopes;
+      my $containers = grep{included_polyhedra($current, $_)}@result, @polytopes;
+      if($containers == 0){
+         push @result, $current;
+      }
+   }
+   return @result;
+}
+
+sub find_inclusion_minimals {
+   my @sets = @_;
+   my @result = ();
+   while(@sets > 0){
+      my $current = pop @sets;
+      my $id = grep{
+         my $intersection = $current * $_;
+         $_->size == $intersection->size
+      } @result,@sets;
+      if($id == 0){
+         push @result, $current;
+      }
+   }
+   return @result;
 }
 
 sub build_components_recursively{
@@ -164,6 +200,7 @@ sub simplify_gens{
 
 sub get_clean_antifacets_list{
    my($cone) = @_;
+   print "LD: ", $cone->LINEALITY_DIM,"\n";
    my $facets = new Matrix<Rational>(primitive($cone->FACETS));
    my $ezero = unit_vector<Rational>($facets->cols, 0);
    $facets = - new Matrix(grep($_ != $ezero, @$facets));
