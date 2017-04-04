@@ -163,7 +163,7 @@ sub has_homology{
 
 user_function intersection_approach(Array<Set<Int> >, Matrix){
    my($A, $M) = @_;
-   my @cones = map(build_cone_pair($_, $M), @$A);
+   my @cones = map(build_cone_from_index_set($_, $M), @$A);
    @cones = map((new Polytope(POINTS=>$_)), @cones);
    print "Building cones ok.\n";
    my @result = build_components_recursively(@cones);
@@ -171,9 +171,11 @@ user_function intersection_approach(Array<Set<Int> >, Matrix){
    @result = map((new Set<Vector<Rational> >(@$_)), @result);
    @result = find_inclusion_minimals(@result);
    print "Inclusion minimal facet combinations: ",scalar @result,"\n";
+   print join("\n\n", @result);
    @result = map(new Matrix(@$_), @result);
    @result = map(new Polytope(INEQUALITIES=>$_), @result);
    return inclusion_maximal_polyhedra(@result);
+   return @result;
 }
 
 sub inclusion_maximal_polyhedra {
@@ -181,7 +183,13 @@ sub inclusion_maximal_polyhedra {
    my @result = ();
    while(@polytopes > 0){
       my $current = pop @polytopes;
-      my $containers = grep{included_polyhedra($current, $_)}@result, @polytopes;
+      my $containers = 0;
+      for my $p (@result, @polytopes){
+         if(included_polyhedra($current, $p)){
+            $containers = 1;
+            last;
+         }
+      }
       if($containers == 0){
          push @result, $current;
       }
@@ -228,19 +236,19 @@ sub build_components_recursively{
             push @result, $toadd;
          }
       }
-      # The following two ifs should just reduce the amount of matrices we are
-      # stuck with, otherwise we never finish.
+      # # The following two ifs should just reduce the amount of matrices we are
+      # # stuck with, otherwise we never finish.
       if(@result > 100){
          my $R = new Set<Matrix<Rational> >(@result);
          @result = @$R;
       }
-      if(@result > 200){
-         print "Reducing polyhedra, ",scalar @result, "\n";
-         @result = map(new Polytope(INEQUALITIES=>$_), @result);
-         @result = inclusion_maximal_polyhedra(@result);
-         @result = map($_->INEQUALITIES, @result);
-         print "Reducing done, ",scalar @result, "\n";
-      }
+      # if(@result > 10){
+        print "Reducing polyhedra, ",scalar @result, "\n";
+        @result = map(new Polytope(INEQUALITIES=>$_), @result);
+        @result = inclusion_maximal_polyhedra(@result);
+        @result = map($_->INEQUALITIES, @result);
+        print "Reducing done, ",scalar @result, "\n";
+      # }
       return @result;
    }
 }
@@ -257,9 +265,15 @@ sub get_clean_antifacets_list{
       print "Should check lineality dim now!\n";
    }
    my $facets = new Matrix<Rational>(primitive($cone->FACETS));
+   if(!$cone->FULL_DIM){
+      print "Should check full dim now!\n";
+      my $aff = new Matrix<Rational>(primitive($cone->AFFINE_HULL));
+      $facets = $facets / $aff / -$aff;
+   }
    print "Facets: ",$facets->rows,"\n";
    my $ezero = unit_vector<Rational>($facets->cols, 0);
-   $facets = - new Matrix(grep($_ != $ezero, @$facets));
+   $facets = new Matrix(grep($_ != $ezero, @$facets));
+   $facets = - new Matrix($facets);
    my $newFacets = ($facets->minor(All, [0]) - ones_matrix($facets->rows, 1)) | $facets->minor(All, ~[0]);
    return @$newFacets;
 }

@@ -25,8 +25,36 @@ $sP = new Polytope(POINTS=>$vert);
 # Getting the problematics
 $fan = normal_fan($sP);
 @prob = find_maculates($fan);
+# The rays in $fan don't have the same ordering, the following takes care of
+# that. The ordering will then be the same as in $fanRays.
+%rayHash = ();
+for(my $i=0; $i<$fanRays->rows; $i++){
+   for(my $j=0; $j<$fan->RAYS->rows; $j++){
+      if($fanRays->[$i] == $fan->RAYS->[$j]){
+         $rayHash{$j} = $i;
+      }
+   }
+}
+@prob = map{
+   my $s = $_;
+   my @s = map($rayHash{$_}, @$s);
+   new Set<Int>(@s)
+} @prob;
 # Finding immaculate locus:
 # Remove {} for now..
 $A = new Array<Set<Int>>(@prob);
 $mat = transpose($incidenceMatrix)->minor(All, ~[$incidenceMatrix->rows-1]);
 @a = intersection_approach($A, new Matrix<Rational>($mat));
+
+# Add one vertex in the middle
+application "fan";
+$M = -ones_vector(4) | zero_vector(4);
+$M = $M / (unit_matrix(4) | unit_matrix(4));
+$M = dense($M);
+$M = $M / (zero_vector(4) | -ones_vector(4));
+$incidenceMatrix = new Matrix<Integer>($M);
+
+# Checking something
+$mat = new Matrix<Rational>($mat);
+@cones = map(build_cone_from_index_set($_, $mat), @prob);
+@cones = map((new Polytope(POINTS=>$_)), @cones);
