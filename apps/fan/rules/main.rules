@@ -116,18 +116,45 @@ sub scale_wrap{
 
 user_function find_maculates(PolyhedralFan){
    my($pf) = @_;
-   my @result = (new Set<Int>([]));
-   for(my $k = 1; $k<=$pf->N_RAYS; $k++){
-      my @subsets = all_subsets_of_k($k, 0..($pf->N_RAYS-1));
-      @subsets = map((new Set<Int>($_)), @subsets);
-      foreach my $s (@subsets){
-         my $subfan = select_subfan($pf, $s);
-         if(has_homology($subfan)){
-            push @result, $s;
-         }
-      }
-   }
+   my @result = find_nonfaces($pf);
+   push @result, new Set<Int>([0..$pf->N_RAYS-1]);
+	@result = grep{
+		my $s = $_;
+		my $subfan = select_subfan($pf, $s);
+		if(has_homology($subfan)){
+			push @result, $s;
+		}
+	} @result;
+	push @result, new Set<Int>([]);
    return @result;
+}
+
+sub find_nonfaces{
+   my($fan) = @_;
+	my @result = ();
+   my $all = new Set<Int>([0..$fan->N_RAYS-1]);
+	for(my $k = 1; $k<=$fan->N_RAYS; $k++){
+		my @subsets = all_subsets_of_k($k, 0..($fan->N_RAYS-1));
+		@subsets = map((new Set<Int>($_)), @subsets);
+		foreach my $s (@subsets){
+			my $comp = $all-$s;
+			my $check = 1;
+			foreach my $face (@{$fan->HASSE_DIAGRAM->FACES}){
+				if($s == $face){
+					$check = 0;
+					last;
+				}
+				if($comp == $face){
+					$check = 0;
+					last;
+				}
+			}
+			if($check){
+				push @result, $s;
+			}
+		}
+	}
+	return @result;
 }
 
 sub select_subfan{
