@@ -1,6 +1,6 @@
 application "fan";
 $f = new PolyhedralFan(INPUT_RAYS=>[[1,0],[0,1],[-1,0],[0,-1]], INPUT_CONES=>[[0,1],[1,2],[2,3],[0,3]]);
-@prob = find_maculates($f);
+@prob = find_temptings($f);
 $A = new Array<Set<Int> >(@prob);
 $mat = null_space(transpose($f->RAYS));
 @a = intersection_approach($A, new Matrix<Rational>(transpose($mat)));
@@ -9,7 +9,7 @@ $mat = null_space(transpose($f->RAYS));
 
 application "fan";
 $f = new PolyhedralFan(INPUT_RAYS=>[[-1, -1, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, -1]],INPUT_CONES=>[[0, 1, 3], [0, 1, 4], [0, 2, 3], [0, 2, 4], [1, 2, 3], [1, 2, 4]]);
-@prob = find_maculates($f);
+@prob = find_temptings($f);
 $mat = null_space(transpose($f->RAYS));
 $mat = new Matrix<Rational>(transpose($mat));
 $A = new Array<Set<Int> >(@prob);

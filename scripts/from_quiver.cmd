@@ -24,7 +24,7 @@ $vert = ones_vector | (transpose($vert));
 $sP = new Polytope(POINTS=>$vert);
 # Getting the problematics
 $fan = normal_fan($sP);
-@prob = find_maculates($fan);
+@prob = find_temptings($fan);
 # The rays in $fan don't have the same ordering, the following takes care of
 # that. The ordering will then be the same as in $fanRays.
 %rayHash = ();

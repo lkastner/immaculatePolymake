@@ -114,7 +114,7 @@ sub scale_wrap{
 ####################################
 # New approach from Klaus
 
-user_function find_maculates(PolyhedralFan){
+user_function find_temptings(PolyhedralFan){
    my($pf) = @_;
    my @result = find_nonfaces($pf);
    push @result, new Set<Int>([0..$pf->N_RAYS-1]);
