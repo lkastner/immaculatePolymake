@@ -37,11 +37,49 @@ sub build_temptings {
    return new Array<Set<Int>>(@result);
 }
 
+# First example
 $c = zero_vector(1);
 $pi = build_pi(1,1,1,1,1,$c, $c);
 $tempting = build_temptings(1,1,1,1,1);
 @a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+$s1 = new Polytope(POINTS=>[[1,-1,-1,-1]]);
+@b1 = map(minkowski_sum($s1, $_), @a);
+@a1 = ();
+foreach my $p (@a){
+   foreach my $q (@b1){
+      my $i = intersection($p, $q);
+      if($i->FEASIBLE){
+         push @a1, $i;
+      }
+   }
+}
 
+$s2 = new Polytope(POINTS=>[[1,-1,-1,-2]]);
+@b2 = map(minkowski_sum($s2, $_), @a);
+@a2 = ();
+foreach my $p (@a1){
+   foreach my $q (@b2){
+      my $i = intersection($p, $q);
+      if($i->FEASIBLE){
+         push @a2, $i;
+      }
+   }
+}
+
+$s3 = new Polytope(POINTS=>[[1,-2,-1,-1]]);
+@b3 = map(minkowski_sum($s3, $_), @a);
+@a3 = ();
+foreach my $p (@a2){
+   foreach my $q (@b3){
+      my $i = intersection($p, $q);
+      if($i->FEASIBLE){
+         push @a3, $i;
+      }
+   }
+}
+
+
+# Second example
 $b = new Vector<Rational>([20]);
 $pi = build_pi(1,1,1,1,1,$c, $b);
 $tempting = build_temptings(1,1,1,1,1);
