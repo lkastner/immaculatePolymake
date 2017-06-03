@@ -1,5 +1,9 @@
 # Main rule file
 
+
+INCLUDE
+   picrk3.rules
+
 object PolyhedralComplex {
 
    property CONTRACTIBLE : Bool;
