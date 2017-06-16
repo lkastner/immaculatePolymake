@@ -281,7 +281,7 @@ print $canonical;
 # Sixth example
 # Two Guilty vectors
 $c = new Vector([0,9]);
-$b = new Vector([0,9]);
+$b = new Vector([1,9]);
 $pi = rk3_build_pi(1,1,2,2,1,$c, $b);
 print $pi;
 $tempting = rk3_build_temptings(1,1,2,2,1);
