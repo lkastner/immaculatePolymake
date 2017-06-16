@@ -1,3 +1,56 @@
+sub rk3_everything{
+   my ($p0, $p1, $c, $b, $p4) = @_;
+   my $p2 =  $c->dim;
+   my $p3 = $b->dim;
+   my $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
+   my $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
+   my @a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+   my @bounded = grep($_->BOUNDED, @a);
+   my @lines = grep(!$_->BOUNDED, @a);
+   my @lpts = map($_->LATTICE_POINTS, @bounded);
+   @lpts = map(@$_, @lpts);
+   my $tmp = new Set<Vector<Integer>>(@lpts);
+   print $tmp->size;
+   @lpts = @$tmp;
+   foreach my $line (@lines){
+      @lpts = grep(!$line->contains($_), @lpts);
+      print "Dim: ", $line->DIM,"\n";
+      print "LinDim: ", $line->LINEALITY_DIM,"\n";
+      print "Gens:\n",$line->LATTICE_POINTS_GENERATORS->[0];
+      print "Direction:\n", $line->LINEALITY_SPACE;
+      print "------------------------------------------------\n";
+   }
+   my $lpts = new Matrix(@lpts);
+   print "Isolated points:\n", $lpts, "\n";
+   my $canonical = ones_matrix(1,$lpts->rows) * $lpts;
+   $canonical = (new Rational(2,($lpts->rows)))*$canonical;
+   print  "-Canonical:", $canonical, "\n";
+}
+
+#this does not work properly yet. It is not used anywhere so far, so I guess I will just leave it here and repair it sometime.   ERROR: Shared module compilation failed; most likely due to a type mismatch.
+sub group_lines{
+   my (@lines) = @_;
+   my @result;
+   my @directions = map($_->LINEALITY_SPACE, @lines);
+   # this makes the directions unique!
+   @directions = @{new Set<Matrix>(@directions)};
+   foreach my $direction (@directions){
+      my @dlines = grep($_->LINEALITY_SPACE==$direction,@lines);
+      my $pts = zero_matrix(0,4);
+      foreach my $line (@dlines){
+         $pts = $pts / $line->LATTICE_POINTS_GENERATORS->[0];
+      }
+      $pts =  new Matrix( new Set<Vector>(@{$pts}));
+      my $p = new Polytope(POINTS=>$pts);
+      if ($p->N_LATTICE_POINTS == $pts->rows){
+         $l = new Polytope(POINTS => $pts/$direction);
+         push @result, $l;
+      }
+   }
+   return @result;
+}
+
+
 sub rk3_build_pi {
    my($p0, $p1, $p2, $p3, $p4, $c, $b) = @_;
    my $result = (zero_matrix<Rational>(2, $p0)) / (ones_vector<Rational>($p0));
@@ -36,4 +89,3 @@ sub rk3_build_temptings {
    push @result, new Set<Int>();
    return new Array<Set<Int>>(@result);
 }
-

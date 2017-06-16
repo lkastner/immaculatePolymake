@@ -302,9 +302,64 @@ print $tmp->size;
 @lpts = @$tmp;
 foreach my $line (@lines){
    @lpts = grep(!$line->contains($_), @lpts);
+   print "Dim: ", $line->DIM,"\n";
+   print "LinDim: ", $line->LINEALITY_DIM,"\n";
+   print "Gens:\n",$line->LATTICE_POINTS_GENERATORS;
+   print "Direction:\n", $line->LINEALITY_SPACE;
+   print "------------------------------------------------\n";
 }
 $lpts = new Matrix(@lpts);
 print $lpts;
 $canonical = ones_matrix(1,$lpts->rows) * $lpts;
 $canonical = (new Rational(2,($lpts->rows)))*$canonical;
 print $canonical;
+
+# Input
+application "fan";
+$p0=1;
+$p1=1;
+$c = new Vector([0,0]);
+$b = new Vector([0,0]);
+$p4 = 1;
+rk3_everything($p0,$p1, $c, $b, $p4);
+
+
+
+# ab hier nichts aendern. 
+$p2 = $c->dim;
+$p3 = $b->dim;
+$pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
+$tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
+@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@bounded = grep($_->BOUNDED, @a);
+@lines = grep(!$_->BOUNDED, @a);
+@test = group_lines(@lines);
+@lpts = map($_->LATTICE_POINTS, @bounded);
+@lpts = map(@$_, @lpts);
+$tmp = new Set<Vector<Integer>>(@lpts);
+print $tmp->size;
+@lpts = @$tmp;
+foreach my $line (@lines){
+   @lpts = grep(!$line->contains($_), @lpts);
+   print "Dim: ", $line->DIM,"\n";
+   print "LinDim: ", $line->LINEALITY_DIM,"\n";
+   print "Gens:\n",$line->LATTICE_POINTS_GENERATORS->[0];
+   print "Direction:\n", $line->LINEALITY_SPACE;
+   print "------------------------------------------------\n";
+}
+$lpts = new Matrix(@lpts);
+print $lpts;
+$canonical = ones_matrix(1,$lpts->rows) * $lpts;
+$canonical = (new Rational(2,($lpts->rows)))*$canonical;
+print "-Canonical:", $canonical, "\n";
+
+@zlines = grep($_->LINEALITY_SPACE==$lines[1]->LINEALITY_SPACE, @lines);
+$pts = $zlines[1]->LATTICE_POINTS_GENERATORS->[0];
+$pts = $pts / $zlines[2]->LATTICE_POINTS_GENERATORS->[0];
+$pts = $pts / $zlines[3]->LATTICE_POINTS_GENERATORS->[0];
+$pts = $pts / $zlines[0]->LATTICE_POINTS_GENERATORS->[0];
+$p = new Polytope(POINTS=>$pts);
+print $p->VERTICES;
+print $p->N_LATTICE_POINTS;
+print $p->LATTICE_POINTS;
+#all the lattice points are in some of the lattice points generators. 
