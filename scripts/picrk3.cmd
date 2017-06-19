@@ -318,8 +318,8 @@ print $canonical;
 application "fan";
 $p0=1;
 $p1=1;
-$c = new Vector([0,0]);
-$b = new Vector([0,0]);
+$c = new Vector([0]);
+$b = new Vector([11]);
 $p4 = 1;
 rk3_everything($p0,$p1, $c, $b, $p4);
 
@@ -351,7 +351,7 @@ $lpts = new Matrix(@lpts);
 print $lpts;
 $canonical = ones_matrix(1,$lpts->rows) * $lpts;
 $canonical = (new Rational(2,($lpts->rows)))*$canonical;
-print "-Canonical:", $canonical, "\n";
+print "Canonical:", $canonical, "\n";
 
 @zlines = grep($_->LINEALITY_SPACE==$lines[1]->LINEALITY_SPACE, @lines);
 $pts = $zlines[1]->LATTICE_POINTS_GENERATORS->[0];
@@ -362,4 +362,4 @@ $p = new Polytope(POINTS=>$pts);
 print $p->VERTICES;
 print $p->N_LATTICE_POINTS;
 print $p->LATTICE_POINTS;
-#all the lattice points are in some of the lattice points generators. 
+#all the lattice points are in some of the lattice points generators.
