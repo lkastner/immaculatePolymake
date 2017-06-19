@@ -363,3 +363,46 @@ print $p->VERTICES;
 print $p->N_LATTICE_POINTS;
 print $p->LATTICE_POINTS;
 #all the lattice points are in some of the lattice points generators.
+
+
+
+# The following code is to calculate the cones sigma_R.
+# First given by rays, and as it seems to be more convenient 
+# for the proof later, then by inequalities.
+$b = 11;
+$Remp = new Matrix([0,-1,0],[1,1,-$b],[0,1,1]);
+$R0 = new Matrix([0,0,1],[-1,0,0],[0,-1,-1]);
+$R1 = new Matrix([0,0,-1],[1,0,0],[-1,-1,$b]);
+$R2 = new Matrix([0,1,0],[1,0,0],[0,-1,-1]);
+$R3 = new Matrix([0,0,-1],[-1,0,0],[1,1,-$b],[0,1,1]);
+$R4 = new Matrix([0,0,1],[0,1,0],[-1,0,0],[-1,-1,$b]);
+
+
+$b = 11;
+$Remp = new Matrix([0,0,1],[0,-1,0],[1,0,0],[1,1,-$b],[0,1,1]);
+$R0 = new Matrix([0,0,1],[0,-1,0],[-1,0,0],[-1,-1,$b],[0,-1,-1]);
+$R1 = new Matrix([0,0,-1],[0,-1,0],[1,0,0],[-1,-1,$b],[0,-1,-1]);
+$R2 = new Matrix([0,0,-1],[0,1,0],[1,0,0],[1,1,-$b],[0,-1,-1]);
+$R3 = new Matrix([0,0,-1],[0,1,0],[-1,0,0],[1,1,-$b],[0,1,1]);
+$R4 = new Matrix([0,0,1],[0,1,0],[-1,0,0],[-1,-1,$b],[0,1,1]);
+
+$Cemp = new Cone(INPUT_RAYS=>$Remp);
+$C0 = new Cone(INPUT_RAYS=>$R0);
+$C1 = new Cone(INPUT_RAYS=>$R1);
+$C2 = new Cone(INPUT_RAYS=>$R2);
+$C3 = new Cone(INPUT_RAYS=>$R3);
+$C4 = new Cone(INPUT_RAYS=>$R4);
+
+print $Cemp->RAYS;
+print $C0->RAYS;
+print $C1->RAYS;
+print $C2->RAYS;
+print $C3->RAYS;
+print $C4->RAYS;
+
+print $Cemp->FACETS;
+print $C0->FACETS;
+print $C1->FACETS;
+print $C2->FACETS;
+print $C3->FACETS;
+print $C4->FACETS;
