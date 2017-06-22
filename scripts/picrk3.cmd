@@ -406,3 +406,18 @@ print $C1->FACETS;
 print $C2->FACETS;
 print $C3->FACETS;
 print $C4->FACETS;
+
+
+
+# code to check the automatization of building the cones.
+
+application "fan";
+$p0=1;
+$p1=1;
+$c = new Vector([0,0]);
+$b = new Vector([1,11]);
+$p4 = 1;
+$R = new Set<Int>(0,1);
+$R2 = new Set<Int>();
+print rk3_build_rays_for_tempting($p0,$p1, $c, $b, $p4, $R);
+print rk3_build_rays_for_tempting($p0,$p1, $c, $b, $p4, $R2);

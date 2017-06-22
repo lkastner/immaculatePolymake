@@ -55,15 +55,36 @@ sub group_lines{
 # as well as by inequalities
 sub rk3_build_maculate_cones {
    my ($p0,$p1,$c,$b,$p4) = @_;
-   my $pi = rk3_build_pi($p0,$p1,$c->dim,$b->dim,$p4,$c,$b);
-   
 }
+
+
+# subroutine to build the matrix of rays for the cone sigma_{R}
+# here $R is not the real tempting subset, but only consists of numbers from 0 to 4.
+sub rk3_build_rays_for_tempting {
+   my ($p0,$p1,$c,$b,$p4, $R) = @_;
+   my $signs = -(ones_vector<Rational>(5));
+   for (my $i < $R->size) {
+      $signs->[$R->[$i]] = 1;
+   }
+   my $p2 = $c->dim;
+   my $p3 = $b->dim;
+   my $result = $signs->[0] * ((zero_matrix<Rational>(2, $p0)) / (ones_vector<Rational>($p0)));
+   $result = $result | $signs->[1] * (((zero_matrix<Rational>(1,$p1)) / -(ones_vector<Rational>($p1))) / zero_vector<Rational>($p1));
+   $result = $result | $signs->[2] * (((ones_matrix<Rational>(1,$p2)) / zero_vector<Rational>($p2)) / -$c);
+   $result = $result | $signs->[3] * ((ones_matrix<Rational>(2,$p3)) / -$b);
+   $result = $result | $signs->[4] * ((zero_matrix<Rational>(1,$p4)) / ones_matrix<Rational>(2, $p4));
+   return transpose($result);
+   #my $C = new Cone(INPUT_RAYS=>transpose($result));
+   #return $C;
+}
+
 
 # subroutine for above. Compute the stuff for a given tempting subset of the rays.
 sub rk3_build_maculate_region_for_tempting{
    my ($R, $total, $pi) = @_;
    
 }
+
 
 
 sub rk3_build_pi {
