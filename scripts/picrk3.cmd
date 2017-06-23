@@ -414,10 +414,40 @@ print $C4->FACETS;
 application "fan";
 $p0=1;
 $p1=1;
-$c = new Vector([0,0]);
-$b = new Vector([1,11]);
+$c = new Vector([0]);
+$b = new Vector([11]);
 $p4 = 1;
 $R = new Set<Int>(0,1);
 $R2 = new Set<Int>();
-print rk3_build_rays_for_tempting($p0,$p1, $c, $b, $p4, $R);
-print rk3_build_rays_for_tempting($p0,$p1, $c, $b, $p4, $R2);
+$C1 = rk3_build_cone_for_tempting($p0,$p1, $c, $b, $p4, $R);
+print $C1->RAYS;
+print $C1->FACETS;
+$C2 = rk3_build_cone_for_tempting($p0,$p1, $c, $b, $p4, $R2);
+print $C2->RAYS;
+print $C2->FACETS;
+$c = new Vector([0,0]);
+$b = new Vector([1,11]);
+$C1 = rk3_build_cone_for_tempting($p0,$p1, $c, $b, $p4, $R);
+print $C1->RAYS;
+print $C1->FACETS;
+$C2 = rk3_build_cone_for_tempting($p0,$p1, $c, $b, $p4, $R2);
+print $C2->RAYS;
+print $C2->FACETS;
+
+
+
+# testing the routine to build the maculate vertex
+application "fan";
+$p0=1;
+$p1=1;
+$p4 = 1;
+$R = new Set<Int>(0,1);
+$R2 = new Set<Int>();
+$c = new Vector([0]);
+$b = new Vector([11]);
+print rk3_maculate_vertex_for_tempting($p0,$p1, $c, $b, $p4, $R);
+print rk3_maculate_vertex_for_tempting($p0,$p1, $c, $b, $p4, $R2);
+$c = new Vector([0,0]);
+$b = new Vector([1,11]);
+print rk3_maculate_vertex_for_tempting($p0,$p1, $c, $b, $p4, $R);
+print rk3_maculate_vertex_for_tempting($p0,$p1, $c, $b, $p4, $R2);

@@ -55,15 +55,34 @@ sub group_lines{
 # as well as by inequalities
 sub rk3_build_maculate_cones {
    my ($p0,$p1,$c,$b,$p4) = @_;
+   
 }
 
+# subroutine to build the vertex of the maculate region M(R)
+sub rk3_maculate_vertex_for_tempting {
+   my ($p0,$p1,$c,$b,$p4, $R) = @_;
+   my $signs = -(ones_vector<Rational>(5));
+   for (my $i=0;  $i < $R->size; $i++) {
+      $signs->[$R->[$i]] = 0;
+   }
+   my $p2 = $c->dim;
+   my $p3 = $b->dim;
+   my $result = $signs->[0] * ((zero_matrix<Rational>(2, $p0)) / (ones_vector<Rational>($p0)));
+   $result = $result | $signs->[1] * (((zero_matrix<Rational>(1,$p1)) / -(ones_vector<Rational>($p1))) / zero_vector<Rational>($p1));
+   $result = $result | $signs->[2] * (((ones_matrix<Rational>(1,$p2)) / zero_vector<Rational>($p2)) / -$c);
+   $result = $result | $signs->[3] * ((ones_matrix<Rational>(2,$p3)) / -$b);
+   $result = $result | $signs->[4] * ((zero_matrix<Rational>(1,$p4)) / ones_matrix<Rational>(2, $p4));
+   my $eins = ones_vector<Rational>($p0+$p1+$p2+$p3+$p4);
+   $result = $result * $eins;
+   return $result;
+}
 
 # subroutine to build the matrix of rays for the cone sigma_{R}
 # here $R is not the real tempting subset, but only consists of numbers from 0 to 4.
-sub rk3_build_rays_for_tempting {
+sub rk3_build_cone_for_tempting {
    my ($p0,$p1,$c,$b,$p4, $R) = @_;
    my $signs = -(ones_vector<Rational>(5));
-   for (my $i < $R->size) {
+   for (my $i=0;  $i < $R->size; $i++) {
       $signs->[$R->[$i]] = 1;
    }
    my $p2 = $c->dim;
@@ -73,16 +92,18 @@ sub rk3_build_rays_for_tempting {
    $result = $result | $signs->[2] * (((ones_matrix<Rational>(1,$p2)) / zero_vector<Rational>($p2)) / -$c);
    $result = $result | $signs->[3] * ((ones_matrix<Rational>(2,$p3)) / -$b);
    $result = $result | $signs->[4] * ((zero_matrix<Rational>(1,$p4)) / ones_matrix<Rational>(2, $p4));
-   return transpose($result);
-   #my $C = new Cone(INPUT_RAYS=>transpose($result));
-   #return $C;
+   #return transpose($result);
+   my $C = new Cone(INPUT_RAYS=>transpose($result));
+   return $C;
 }
 
 
 # subroutine for above. Compute the stuff for a given tempting subset of the rays.
 sub rk3_build_maculate_region_for_tempting{
-   my ($R, $total, $pi) = @_;
-   
+   my ($p0,$p1,$c,$b,$p4, $R) = @_;
+   my $C = rk3_build_cone_for_tempting($p0,$p1,$c,$b,$p4, $R);
+   my $v = rk3_maculate_vertex_for_tempting($p0,$p1,$c,$b,$p4, $R);
+
 }
 
 
