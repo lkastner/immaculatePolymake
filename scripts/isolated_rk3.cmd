@@ -1,10 +1,12 @@
-$p0=100;
+$p0=1;
 $p1=1;
 $c = zero_vector(1);
-$b = new Vector([109]);
-$p4 = 1;
+$b = zero_vector(2);
+$p4 = 2;
 $p2 = $c->dim;
 $p3 = $b->dim;
+# canonical for b and c = 0
+$K00 = new Vector([-$p2-$p3, $p1-$p3-$p4, -$p0-$p4]);
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
 $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
 @a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
@@ -14,11 +16,14 @@ $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
 $tmp = new Set<Vector<Integer>>(@lpts);
 print $tmp->size;
 @lpts = @$tmp;
+@lines = grep(!$_->BOUNDED, @a);
 foreach my $line (@lines){
    @lpts = grep(!$line->contains($_), @lpts);
 }
 $lpts = new Matrix(@lpts);
 print $lpts->rows;
+print $lpts;
+print $K00;
 
 $A1 = $lpts;
 # Make some more...
