@@ -31,15 +31,13 @@ print $lpts;
 
 
 
-$p0=1;
+$p0=5;
 $p1=2;
-$c = new Vector([0]);
-$b = new Vector([11]);
+$c = new Vector([0,50]);
+$b = new Vector([1,110]);
 $p4 = 1;
 $p2 = $c->dim;
 $p3 = $b->dim;
-# canonical for b and c = 0
-$K00 = new Vector([-$p2-$p3, $p1-$p3-$p4, -$p0-$p4]);
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
 $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
 @a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
@@ -62,8 +60,18 @@ $S1 = new Set<Vector<Integer>>(@$A1);
 $S2 = new Set<Vector<Integer>>(@$A2);
 $S12 = $S1 * $S2;
 print new Matrix($S12);
+$A3 = $lpts;
 $S3 = new Set<Vector<Integer>>(@$A3);
 $S13 = $S1 * $S3;
 $S23 = $S2 * $S3;
 print $S12 == $S23;
 print $S12 == $S13;
+print new Matrix($S13);
+print new Matrix($S13)->rows;
+$A5 = $lpts;
+$S5 = new Set<Vector<Integer>>(@$A5);
+$S35 = $S3 * $S5;
+print new Matrix($S35);
+print new Matrix($S35)->rows;
+
+
