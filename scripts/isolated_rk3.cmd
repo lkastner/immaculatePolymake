@@ -32,10 +32,10 @@ print $lpts;
 
 
 $p0=5;
-$p1=2;
-$c = new Vector([0,50]);
-$b = new Vector([1,110]);
-$p4 = 1;
+$p1=5;
+$c = new Vector([0,0,0,1,50]);
+$b = new Vector([0,0,1,10,100]);
+$p4 = 5;
 $p2 = $c->dim;
 $p3 = $b->dim;
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
