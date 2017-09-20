@@ -31,11 +31,11 @@ print $lpts;
 
 
 
-$p0=5;
-$p1=5;
-$c = new Vector([0,0,0,1,50]);
-$b = new Vector([0,0,1,10,100]);
-$p4 = 5;
+$p0=2;
+$p1=2;
+$c = new Vector([0,50]);
+$b = new Vector([1,100]);
+$p4 = 2;
 $p2 = $c->dim;
 $p3 = $b->dim;
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
@@ -54,6 +54,9 @@ foreach my $line (@lines){
 $lpts = new Matrix(@lpts);
 print $lpts->rows;
 print $lpts;
+
+
+
 $A1 = $lpts;
 $A2 = $lpts;
 $S1 = new Set<Vector<Integer>>(@$A1);
