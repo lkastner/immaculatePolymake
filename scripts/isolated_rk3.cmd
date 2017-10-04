@@ -32,10 +32,10 @@ print $lpts;
 
 
 $p0=5;
-$p1=2;
+$p1=4;
 $c = new Vector([0,1,50]);
-$b = new Vector([1,10,100]);
-$p4 = 2;
+$b = new Vector([10,100]);
+$p4 = 5;
 $p2 = $c->dim;
 $p3 = $b->dim;
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
@@ -48,6 +48,10 @@ $tmp = new Set<Vector<Integer>>(@lpts);
 print $tmp->size;
 @lpts = @$tmp;
 @lines = grep(!$_->BOUNDED, @a);
+foreach my $line (@lines){
+   $P = new Polytope(POINTS=>$line->VERTICES);
+   tikz($P->VISUAL,File=>"-");
+}
 foreach my $line (@lines){
    @lpts = grep(!$line->contains($_), @lpts);
 }
