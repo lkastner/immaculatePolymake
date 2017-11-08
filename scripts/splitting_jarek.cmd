@@ -1,3 +1,7 @@
+# Warning: This only works with the branch
+# feature/apps/fulton/untested
+# of polymake.
+
 application "fulton";
 $rays = new Matrix<Rational>([
     [1, 0, 0],
