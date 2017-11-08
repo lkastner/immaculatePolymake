@@ -41,6 +41,9 @@ polymake: used package 4ti2
   http://www.4ti2.de/
 
 1
+# This means that the divisor is indeed immaculate.
+#
+# Next we construct the immaculate region.
 
 fulton > @a = find_temptings($f);
 
@@ -65,6 +68,9 @@ fulton > print $pi;
 
 fulton > $tempt = new Array<Set<Int>>(@a);
 fulton > @pp = intersection_approach($tempt, new Matrix<Rational>($pi));
+# One can see that the immaculate region is made of 17 polyhedra, probably some
+# can be reduced away. Last we check whether the divisor is contained in an
+# immaculate polyhedron:
 
 fulton > $pv = transpose($pi) * $div->COEFFICIENTS;
 
@@ -94,6 +100,8 @@ Cont: 0
 Cont: 0
 Cont: 0
 Cont: 0
+# The divisor is not contained in any immaculate polyhedron, verifying Jarek's
+# claim.
 
 fulton > print transpose($pi) * primitive($tv->RAYS);
 0 0 0
