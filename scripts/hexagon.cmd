@@ -12,8 +12,9 @@ $fan = new PolyhedralFan(RAYS=>$rho_star, MAXIMAL_CONES=>[[0,1],[1,2],[2,3],[3,4
 print @prob;
 # Computing the cokernerl we get:
 $pi = null_space(transpose($rho_star));
-# But instead we choose:
-$pi = new Matrix<Rational>([[1,1,1,1,1,1],[1,0,1,0,1,0],[1,0,0,1,0,0],[0,1,0,0,1,0]]);
+# $pi = new Matrix<Rational>([[1,1,1,1,1,1],[1,0,1,0,1,0],[1,0,0,1,0,0],[0,1,0,0,1,0]]);
+# But instead we choose from the primitive collections 03 14 25 and 02:
+$pi = new Matrix<Rational>([[1,0,0,1,0,0],[0,1,0,0,1,0],[0,0,1,0,0,1],[1,-1,1,0,0,0]]);
 print $pi;
 $A = new Array<Set<Int>>(@prob);
 @a = intersection_approach($A, new Matrix<Rational>(transpose($pi)));
@@ -28,3 +29,9 @@ $lp_set = new Set<Vector<Integer>>(@lp);
 @lp = grep(!$unbounded[2]->contains($_), @lp);
 $A = new Matrix(@lp);
 print join("\\\\\n", map(join(" & ", @$_), @$A));
+
+application "fulton";
+$Q = new RationalDivisorClassGroup(PROJECTION=>transpose($pi));
+$tv = new NormalToricVariety(RAYS=>$rho_star, MAXIMAL_CONES=>$fan->MAXIMAL_CONES, RATIONAL_DIVISOR_CLASS_GROUP=>$Q);
+print $tv->NEF_CONE->RAYS;
+
