@@ -103,9 +103,22 @@ sub recursive_es{
    }
 }
 
+
 application "fulton";
 $Q = new RationalDivisorClassGroup(PROJECTION=>transpose($pi));
 $tv = new NormalToricVariety(RAYS=>$rho_star, MAXIMAL_CONES=>$fan->MAXIMAL_CONES, RATIONAL_DIVISOR_CLASS_GROUP=>$Q);
 print $tv->NEF_CONE->RAYS;
 
+# Group action
+# Since we are living in two dimensions, this should be ok.
+$pts = $fan->RAYS;
+$gp = linear_symmetries(new Matrix<Rational>($pts));
+$gens = $gp->PERMUTATION_ACTION->GENERATORS;
+print $gens;
+$all = $gp->PERMUTATION_ACTION->ALL_GROUP_ELEMENTS;
+print $all;
+print $pi * permutation_matrix($_) * $fan->RAYS foreach @$all;
+$section = new Matrix([[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1],[1,0,0,-1,0,0]]);
+$section = transpose($section);
+print $pi * $section;
 
