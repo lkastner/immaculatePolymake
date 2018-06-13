@@ -62,25 +62,6 @@ sub step_pool{
    return $new_pool;
 }
 
-@imm = (@unbounded, map(new Polytope(POINTS=>[$_]), @lp));
-$d0 = new Vector([0,0,0,0]);
-foreach my $candidate (@$candidates){
-   my $new_pool = step_pool($pool, $candidate);
-   print $candidate," : ",$new_pool->size,"\n";
-}
-$d1 = new Vector([1,-1,0,0,0]);
-$old_pool = step_pool($pool, $d1);
-foreach my $candidate (@$old_pool){
-   my $new_pool = step_pool($old_pool, $candidate);
-   print $candidate," : ",$new_pool->size,"\n";
-}
-$d2 = new Vector<Integer>([1,-1,-1,0,0]);
-$old_pool = step_pool($pool, $d2);
-foreach my $candidate (@$old_pool){
-   my $new_pool = step_pool($old_pool, $candidate);
-   print $candidate," : ",$new_pool->size,"\n";
-}
-
 sub print_es_table_row{
    my($es_in) = @_;
    my $es = $es_in->minor(~[0], ~[0]);
@@ -89,19 +70,27 @@ sub print_es_table_row{
 }
 
 sub recursive_es{
-   my($pool, $selected) = @_;
+   my($pool, $selected, $desired_length) = @_;
    if($pool->size == 0){
-      if($selected->rows >= 6){
+      if($selected->rows >= $desired_length){
          # print $selected,": ",$selected->rows,"\n";
          print_es_table_row($selected);
+         return $selected;
+      } else {
+         return ();
       }
-      return;
-   }
-   foreach my $candidate (@$pool){
-      my $new_pool = step_pool($pool, $candidate);
-      recursive_es($new_pool, new Matrix<Integer>($selected / $candidate));
+   } else {
+      my @result = ();
+      foreach my $candidate (@$pool){
+         my $new_pool = step_pool($pool, $candidate);
+         push @result, recursive_es($new_pool, new Matrix<Integer>($selected / $candidate), $desired_length);
+      }
+      return @result;
    }
 }
+
+$selected = new Matrix<Integer>([[1,0,0,0,0]]);
+@exceptionals = recursive_es($pool, $selected, 6);
 
 
 application "fulton";
@@ -112,13 +101,45 @@ print $tv->NEF_CONE->RAYS;
 # Group action
 # Since we are living in two dimensions, this should be ok.
 $pts = $fan->RAYS;
+# Take the linear symmetries that act on the vertices of the hexagon. Since we
+# are in two dimensions, this is also the group we are looking for.
 $gp = linear_symmetries(new Matrix<Rational>($pts));
 $gens = $gp->PERMUTATION_ACTION->GENERATORS;
 print $gens;
+# Get all elements
 $all = $gp->PERMUTATION_ACTION->ALL_GROUP_ELEMENTS;
 print $all;
+# Check whether the group elements preserve the kernel of pi
 print $pi * permutation_matrix($_) * $fan->RAYS foreach @$all;
 $section = new Matrix([[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1],[1,0,0,-1,0,0]]);
 $section = transpose($section);
+# Check whether this really is a section of pi
 print $pi * $section;
+# Action on Cl(X) is given by acting on a random preimage under pi, then
+# applying pi. More directly, this can be phrased as:
+@cl_gp = map($pi * permutation_matrix($_) * $section, @$all);
 
+# Compute orbit of the exceptionals:
+# Cut off homogenizing first entry
+@a = map(new Matrix($_->minor(All, ~[0])), @exceptionals);
+# Calculate orbit of first exc sequence
+$b = new Set<Matrix<Integer>>(map($_ * transpose($a[0]), @cl_gp));
+print $b->size;
+# Size is 12, just like the number of exc sequences
+$i = 0;
+foreach my $exc (@a){
+   print $i,": ",$b->contains(transpose($exc)),"\n";
+   $i++;
+}
+# Returns true for all.
+
+# Checking with the cube:
+$c = cube(6,0,-1);
+$V = $c->VERTICES->minor(All, ~[0]);
+$Q = new Polytope(POINTS=>ones_vector | ($V * transpose($pi)));
+foreach my $v (@{$exceptionals[0]}){
+   print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+}
+foreach my $v (@{$exceptionals[2]}){
+   print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+}
