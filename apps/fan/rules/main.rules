@@ -329,3 +329,44 @@ sub build_cone_from_index_set{
    return $gens;
 }
 
+sub step_pool{
+   my($original_pool, $pool, $d) = @_;
+   my $c = new Vector<Integer>($d);
+   $c->[0] = 0;
+   my $translated_pool = new Set<Vector<Integer>>(map($_ + $c, @$original_pool));
+   my $new_pool = $pool * $translated_pool;
+   return $new_pool;
+}
+
+sub print_es_table_row{
+   my($es_in) = @_;
+   my $es = $es_in->minor(~[0], ~[0]);
+   my $out = join("  &  ",map(join(" & ",@$_), @$es))."\\\\\n";
+   print $out;
+}
+
+user_function find_es_from_immaculate( $ , $ ){
+   my($pool, $desired_length) = @_;
+   my $selected = unit_vector<Integer>($pool->[0]->dim, 0);
+   return recursive_es($pool, $pool, $selected, $desired_length);
+}
+
+sub recursive_es{
+   my($original_pool, $current_pool, $selected, $desired_length) = @_;
+   if($current_pool->size == 0){
+      if($selected->rows >= $desired_length){
+         # print $selected,": ",$selected->rows,"\n";
+         print_es_table_row($selected);
+         return $selected;
+      } else {
+         return ();
+      }
+   } else {
+      my @result = ();
+      foreach my $candidate (@$current_pool){
+         my $new_pool = step_pool($original_pool, $current_pool, $candidate);
+         push @result, recursive_es($original_pool, $new_pool, new Matrix<Integer>($selected / $candidate), $desired_length);
+      }
+      return @result;
+   }
+}

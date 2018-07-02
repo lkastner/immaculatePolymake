@@ -137,9 +137,9 @@ foreach my $exc (@a){
 $c = cube(6,0,-1);
 $V = $c->VERTICES->minor(All, ~[0]);
 $Q = new Polytope(POINTS=>ones_vector | ($V * transpose($pi)));
-foreach my $v (@{$exceptionals[0]}){
-   print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
-}
-foreach my $v (@{$exceptionals[2]}){
-   print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+foreach my $exc (@exceptionals){
+   foreach my $v (@$exc){
+      print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+   }
+   print "\n";
 }
