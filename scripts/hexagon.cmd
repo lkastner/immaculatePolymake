@@ -100,9 +100,33 @@ foreach my $exc (@a){
 $c = cube(6,0,-1);
 $V = $c->VERTICES->minor(All, ~[0]);
 $Q = new Polytope(POINTS=>ones_vector | ($V * transpose($pi)));
+
+$cc = cube(6,5,-5);
+$VV = $cc->VERTICES->minor(All, ~[0]);
+$QQ = new Polytope(POINTS=>ones_vector | ($VV * transpose($pi)));
+@pool = map(intersection($_, $QQ), @unbounded);
+@pool = map($_->LATTICE_POINTS, @pool);
+@pool = (@pool, $A);
+$pool = new Set<Vector<Integer>>(map(@$_, @pool));
+
+@exceptionals = find_es_from_immaculate($pool, 6);
+print scalar @exceptionals;
+@good_exc = ();
+$i = 0;
 foreach my $exc (@exceptionals){
+   my $check = true;
    foreach my $v (@$exc){
-      print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+      $check &= $Q->contains(new Vector<Rational>($v));
+      if(!$check){last;}
    }
-   print "\n";
+   print $i,": ",$check,"\n";
+   if($check){
+      foreach my $v (@$exc){
+         print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+      }
+      print "\n";
+      push @good_exc, $exc;
+   }
+   $i++;
 }
+print scalar @good_exc;
