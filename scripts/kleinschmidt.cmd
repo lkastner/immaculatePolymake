@@ -26,7 +26,7 @@ $A = new Matrix(@lp);
 print $A;
 
 # Try to build a exceptional sequence.
-@pool = map(intersection($_, cube(2,5,-10)), @unbounded);
+@pool = map(intersection($_, cube(2,5,-2)), @unbounded);
 @pool = map($_->LATTICE_POINTS, @pool);
 @pool = (@pool, $A);
 $pool = new Set<Vector<Integer>>(map(@$_, @pool));

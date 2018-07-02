@@ -53,44 +53,7 @@ print $i21->LATTICE_POINTS;
 $pool = new Set<Vector<Integer>>(map(@$_, @pool));
 $candidates = new Matrix(@$pool);
 
-sub step_pool{
-   my($old_pool, $d) = @_;
-   my $c = new Vector<Integer>($d);
-   $c->[0] = 0;
-   my $translated_pool = new Set<Vector<Integer>>(map($_ + $c, @$old_pool));
-   my $new_pool = $old_pool * $translated_pool;
-   return $new_pool;
-}
-
-sub print_es_table_row{
-   my($es_in) = @_;
-   my $es = $es_in->minor(~[0], ~[0]);
-   my $out = join("  &  ",map(join(" & ",@$_), @$es))."\\\\\n";
-   print $out;
-}
-
-sub recursive_es{
-   my($pool, $selected, $desired_length) = @_;
-   if($pool->size == 0){
-      if($selected->rows >= $desired_length){
-         # print $selected,": ",$selected->rows,"\n";
-         print_es_table_row($selected);
-         return $selected;
-      } else {
-         return ();
-      }
-   } else {
-      my @result = ();
-      foreach my $candidate (@$pool){
-         my $new_pool = step_pool($pool, $candidate);
-         push @result, recursive_es($new_pool, new Matrix<Integer>($selected / $candidate), $desired_length);
-      }
-      return @result;
-   }
-}
-
-$selected = new Matrix<Integer>([[1,0,0,0,0]]);
-@exceptionals = recursive_es($pool, $selected, 6);
+@exceptionals = find_es_from_immaculate($pool, 6);
 
 
 application "fulton";
