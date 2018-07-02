@@ -52,7 +52,8 @@ user_function kleinschmidt( Int , Vector<Int> ) {
    #
    # Peter Kleinschmidt. A classification of toric varieties with few generators.
    # Aequationes Math., 35(2-3):254–266, 1988.
-   my($d, $a) = @_;
+   my($d, $aInt) = @_;
+   my $a = new Vector<Rational>($aInt);
    $d > 0 or die("Expected a positive integer d.");
    my $r = $a->dim();
    my $s = $d - $r + 1;
