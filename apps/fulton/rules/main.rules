@@ -41,3 +41,32 @@ object NormalToricVariety {
    }
 
 }
+
+# @category Producing a normal toric variety
+# Produces a smooth normal toric variety of Picard rank 2 with the Kleinschmidt construction.
+# @param Int d The dimension (equal to number of rays - 2).
+# @param Vector<Int> a The Kleinschmidt parameters.
+# @return NormalToricVariety
+user_function kleinschmidt( Int , Vector<Int> ) {
+   # The variable names are chosen according to the Kleinschmidt construction in:
+   #
+   # Peter Kleinschmidt. A classification of toric varieties with few generators.
+   # Aequationes Math., 35(2-3):254–266, 1988.
+   my($d, $a) = @_;
+   $d > 0 or die("Expected a positive integer d.");
+   my $r = $a->dim();
+   my $s = $d - $r + 1;
+   my $Urays = (unit_matrix($r) | -ones_matrix($r,1))/zero_matrix($s-1,$r+1);
+   my $vs = $a | (-ones_vector($s-1));
+   my $Vrays = (zero_matrix($r,$s-1) / unit_matrix($s-1)) | $vs;
+   my $groundSet = new Set<Int>(0..($r+$s));
+   my @mc = ();
+   for(my $i=0; $i<$r+1; $i++){
+      for(my $j=$r+1; $j<=$r+$s; $j++){
+         push @mc, $groundSet - $i - $j;
+      }
+   }
+   my $rays = new Matrix($Urays | $Vrays);
+   return new NormalToricVariety(INPUT_RAYS=>transpose($rays), INPUT_CONES=>\@mc);
+}
+
