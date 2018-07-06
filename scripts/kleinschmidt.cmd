@@ -54,4 +54,8 @@ $dd5 = new Vector<Integer>([1,2,1]);
 print $pool4->contains($dd5);
 $pool5 = step_pool($pool, $pool4, $dd5);
 
+$pi = $tv->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION;
+$c = cube($pi->rows,0,-1);
+$V = $c->VERTICES->minor(All, ~[0]);
+$Q = new Polytope(POINTS=>ones_vector | ($V * $pi));
 
