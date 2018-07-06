@@ -348,6 +348,7 @@ sub print_es_table_row{
 user_function find_es_from_immaculate( $ , $ ){
    my($pool, $desired_length) = @_;
    my $selected = unit_vector<Integer>($pool->[0]->dim, 0);
+   $selected = new Matrix<Integer>([$selected]);
    return recursive_es($pool, $pool, $selected, $desired_length);
 }
 

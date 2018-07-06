@@ -14,20 +14,21 @@ object NormalToricVariety {
       # Project to class (Picard) group
       my $pi = transpose($this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION);
       my $pv = $pi * $v;
+      my $n = $pv->dim;
       # Construct polytope of all ($pv1, $pv2) with
       # - $pv1, $pv2 nef
       # - $pv1 - $pv2 = $v
       my $nef = $this->NEF_CONE;
       my $A = $nef->FACETS;
-      my $B = (-$pv) | unit_matrix(3) | -unit_matrix(3);
+      my $B = (-$pv) | unit_matrix($n) | -unit_matrix($n);
       $B = dense($B);
-      my $AA = zero_vector(6) | ($A / zero_matrix(3,3));
-      my $AAA = $AA | (zero_matrix(3,3) / $A);
+      my $AA = zero_vector(2*$A->rows) | ($A / zero_matrix($A->rows, $A->cols));
+      my $AAA = $AA | (zero_matrix($A->rows, $A->cols) / $A);
       my $P = new Polytope(INEQUALITIES=>$AAA, EQUATIONS=>$B);
       # Extract one solution
-      my $pvv = $P->LATTICE_POINTS_GENERATORS->[0]->[0];
-      my $pv1 = $pvv->slice(1,$pv->dim);
-      my $pv2 = $pvv->slice(1+$pv->dim, $pv->dim);
+      my $pvv = new Vector<Rational>($P->LATTICE_POINTS_GENERATORS->[0]->[0]);
+      my $pv1 = $pvv->slice(range(1,$pv->dim));
+      my $pv2 = $pvv->slice(range(1+$pv->dim, 2*$pv->dim));
       # Lift $pv1 and $pv2 to Weil divisor group
       my $lift = transpose($this->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING);
       my $v1 = $lift * $pv1;
