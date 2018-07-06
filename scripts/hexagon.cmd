@@ -130,3 +130,10 @@ foreach my $exc (@exceptionals){
    $i++;
 }
 print scalar @good_exc;
+
+@good_exc = map(new Matrix($_->minor(All, ~[0])), @good_exc);
+$cube_es = new Set<Matrix<Integer>>(@good_exc);
+foreach my $exc(@good_exc){
+   my $orbit = new Set<Matrix<Integer>>(map($exc*transpose($_), @cl_gp));
+   print $orbit->size(),"\n";
+}
