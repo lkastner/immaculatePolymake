@@ -133,7 +133,23 @@ print scalar @good_exc;
 
 @good_exc = map(new Matrix($_->minor(All, ~[0])), @good_exc);
 $cube_es = new Set<Matrix<Integer>>(@good_exc);
+$orbits = new Set<Set<Matrix<Integer>>>();
 foreach my $exc(@good_exc){
    my $orbit = new Set<Matrix<Integer>>(map($exc*transpose($_), @cl_gp));
    print $orbit->size(),"\n";
+   $orbits += $orbit;
+}
+print $orbits->size(),"\n";
+foreach my $orbit (@$orbits){
+   my $aug = new Matrix(ones_vector<Integer>() | $orbit->[0]);
+   print_es_table_row($aug);
+   # Check whether this sequence really is exceptional
+   for(my $i=0; $i<6; $i++){
+      for(my $j=0; $j<$i; $j++){
+         my $diff = new Vector($aug->[$i] - $aug->[$j]);
+         $diff->[0] = 1;
+         my $containers = grep($_->contains($diff), @a);
+         if($containers == 0){print "err\n";}
+      }
+   }
 }
