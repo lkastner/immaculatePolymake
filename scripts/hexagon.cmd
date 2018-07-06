@@ -100,9 +100,56 @@ foreach my $exc (@a){
 $c = cube(6,0,-1);
 $V = $c->VERTICES->minor(All, ~[0]);
 $Q = new Polytope(POINTS=>ones_vector | ($V * transpose($pi)));
+
+$cc = cube(6,5,-5);
+$VV = $cc->VERTICES->minor(All, ~[0]);
+$QQ = new Polytope(POINTS=>ones_vector | ($VV * transpose($pi)));
+@pool = map(intersection($_, $QQ), @unbounded);
+@pool = map($_->LATTICE_POINTS, @pool);
+@pool = (@pool, $A);
+$pool = new Set<Vector<Integer>>(map(@$_, @pool));
+
+@exceptionals = find_es_from_immaculate($pool, 6);
+print scalar @exceptionals;
+@good_exc = ();
+$i = 0;
 foreach my $exc (@exceptionals){
+   my $check = true;
    foreach my $v (@$exc){
-      print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+      $check &= $Q->contains(new Vector<Rational>($v));
+      if(!$check){last;}
    }
-   print "\n";
+   print $i,": ",$check,"\n";
+   if($check){
+      foreach my $v (@$exc){
+         print $v,": ",$Q->contains(new Vector<Rational>($v)),"\n";
+      }
+      print "\n";
+      push @good_exc, $exc;
+   }
+   $i++;
+}
+print scalar @good_exc;
+
+@good_exc = map(new Matrix($_->minor(All, ~[0])), @good_exc);
+$cube_es = new Set<Matrix<Integer>>(@good_exc);
+$orbits = new Set<Set<Matrix<Integer>>>();
+foreach my $exc(@good_exc){
+   my $orbit = new Set<Matrix<Integer>>(map($exc*transpose($_), @cl_gp));
+   print $orbit->size(),"\n";
+   $orbits += $orbit;
+}
+print $orbits->size(),"\n";
+foreach my $orbit (@$orbits){
+   my $aug = new Matrix(ones_vector<Integer>() | $orbit->[0]);
+   print_es_table_row($aug);
+   # Check whether this sequence really is exceptional
+   for(my $i=0; $i<6; $i++){
+      for(my $j=0; $j<$i; $j++){
+         my $diff = new Vector($aug->[$i] - $aug->[$j]);
+         $diff->[0] = 1;
+         my $containers = grep($_->contains($diff), @a);
+         if($containers == 0){print "err\n";}
+      }
+   }
 }
