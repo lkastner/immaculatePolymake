@@ -33,7 +33,7 @@ print $lpts;
 
 $p0=5;
 $p1=4;
-$c = new Vector([0,1,50]);
+$c = new Vector([0]);
 $b = new Vector([10,100]);
 $p4 = 5;
 $p2 = $c->dim;
