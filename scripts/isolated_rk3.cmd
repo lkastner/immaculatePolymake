@@ -33,8 +33,8 @@ print $lpts;
 
 $p0=5;
 $p1=4;
-$c = new Vector([0,1,50]);
-$b = new Vector([10,100]);
+$c = new Vector([0]);
+$b = new Vector([4]);
 $p4 = 5;
 $p2 = $c->dim;
 $p3 = $b->dim;
@@ -48,10 +48,6 @@ $tmp = new Set<Vector<Integer>>(@lpts);
 print $tmp->size;
 @lpts = @$tmp;
 @lines = grep(!$_->BOUNDED, @a);
-foreach my $line (@lines){
-   $P = new Polytope(POINTS=>$line->VERTICES);
-   tikz($P->VISUAL,File=>"-");
-}
 foreach my $line (@lines){
    @lpts = grep(!$line->contains($_), @lpts);
 }
