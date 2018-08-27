@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?pm chk="58b875de"?>
+<?pm chk="5b7ffcb2"?>
 
-<object name="2pts" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.0.9" xmlns="http://www.math.tu-berlin.de/polymake/#3">
+<object name="2pts" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.2" xmlns="http://www.math.tu-berlin.de/polymake/#3">
   <property name="POINTS">
     <m>
       <v>1 0</v>
@@ -9,7 +9,7 @@
     </m>
   </property>
   <property name="INPUT_POLYTOPES">
-    <m>
+    <m cols="2">
       <v>0</v>
       <v>1</v>
     </m>

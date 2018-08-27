@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?pm chk="58b874b4"?>
+<?pm chk="5b7ffdcc"?>
 
-<object name="squareBoundary" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.0.9" xmlns="http://www.math.tu-berlin.de/polymake/#3">
+<object name="squareBoundary" type="fan::PolyhedralComplex&lt;Rational&gt;" version="3.2" xmlns="http://www.math.tu-berlin.de/polymake/#3">
   <property name="POINTS">
     <m>
       <v>1 0 0</v>
@@ -11,7 +11,7 @@
     </m>
   </property>
   <property name="INPUT_POLYTOPES">
-    <m>
+    <m cols="4">
       <v>0 1</v>
       <v>1 2</v>
       <v>2 3</v>
