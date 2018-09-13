@@ -112,8 +112,8 @@ sub rk3_build_pi {
    my $b1 = $b + ones_vector<Rational>($p3);
    my $result = (ones_vector<Rational>($p0)) / (zero_matrix<Rational>(2, $p0));
    $result = $result | ((ones_matrix<Rational>(2,$p1)) / -((ones_matrix<Rational>(1,$p1))));
-   $result = $result | ((-$c / (ones_vector<Rational>($p2)) / (zero_vector<Rational>($p2))));
-   $result = $result | (-$b1 / (zero_vector<Rational>($p3)) / (ones_vector<Rational>($p3)));
+   $result = $result | ((-vector2row($c) / (ones_vector<Rational>($p2)) / (zero_vector<Rational>($p2))));
+   $result = $result | (-vector2row($b1) / (zero_vector<Rational>($p3)) / (ones_vector<Rational>($p3)));
    $result = $result | ((zero_matrix<Rational>(1,$p4)) / -(ones_matrix<Rational>(1, $p4))/ (ones_matrix<Rational>(1, $p4)));
    return $result;
 }
