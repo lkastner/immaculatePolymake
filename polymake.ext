@@ -5,7 +5,7 @@
 
 # URI is a unique identifier assigned to this extension.
 # This is the only mandatory entry in this file.
-URI immaculate
+URI https://github.com/lkastner/immaculatePolymake
 
 # Below you can put a short name for your extension.
 
