@@ -138,9 +138,8 @@ sub find_nonfaces{
 	my @result = ();
    my $all = new Set<Int>([0..$fan->N_RAYS-1]);
 	for(my $k = 1; $k<=$fan->N_RAYS; $k++){
-		my @subsets = all_subsets_of_k($k, 0..($fan->N_RAYS-1));
-		@subsets = map((new Set<Int>($_)), @subsets);
-		foreach my $s (@subsets){
+		my $subsets = all_subsets_of_k(range(0,($fan->N_RAYS-1)), $k);
+		foreach my $s (@$subsets){
 			my $comp = $all-$s;
 			my $check = 1;
 			foreach my $face (@{$fan->HASSE_DIAGRAM->FACES}){
@@ -192,21 +191,17 @@ sub has_homology{
    return 0;
 }
 
-user_function intersection_approach(Array<Set<Int> >, Matrix){
+user_function immaculate_locus_via_intersection(Array<Set<Int> >, Matrix){
    my($A, $M) = @_;
    my @cones = map(build_cone_from_index_set($_, $M), @$A);
+   print "There are ",scalar @cones," intersection steps ahead.\n";
    @cones = map((new Polytope(POINTS=>$_)), @cones);
-   print "Building cones ok.\n";
    my @result = build_components_recursively(@cones);
-   print "Size after building intersections: ",scalar @result,"\n";
    @result = map((new Set<Vector<Rational> >(@$_)), @result);
    @result = find_inclusion_minimals(@result);
-   print "Inclusion minimal facet combinations: ",scalar @result,"\n";
-   print join("\n\n", @result);
    @result = map(new Matrix(@$_), @result);
    @result = map(new Polytope(INEQUALITIES=>$_), @result);
    return inclusion_maximal_polyhedra(@result);
-   return @result;
 }
 
 sub inclusion_maximal_polyhedra {
@@ -246,20 +241,23 @@ sub find_inclusion_minimals {
 
 sub build_components_recursively{
    my @cones = @_;
-   if(@cones == 1){
-      my $cone = pop @cones;
-      my @result = get_clean_antifacets_list($cone);
-      return map(new Matrix([$_]), @result);
+   my $step = scalar @cones;
+   my @result;
+   my $cone = pop @cones;
+   my $nfacets = $cone->N_FACETS;
+   if($step == 1){
+      print "Step $step: The cone has $nfacets facets.\n";
+      @result = get_clean_antifacets_list($cone);
+      @result = map(new Matrix([$_]), @result);
    } else {
-      my $cone = pop @cones;
       my @preres = build_components_recursively(@cones);
+      print "Step $step: The cone has $nfacets facets.\n";
       if($cone->LINEALITY_DIM == $cone->DIM){
          # If the cone is everything, there will be no facets, so intersecting
          # does nothing.
          return @preres;
       }
       my @newFacets = get_clean_antifacets_list($cone);
-      my @result;
       foreach my $facet (@newFacets){
          foreach my $matrix (@preres){
             my $toadd = new Matrix($matrix / $facet);
@@ -267,21 +265,18 @@ sub build_components_recursively{
             push @result, $toadd;
          }
       }
-      # # The following two ifs should just reduce the amount of matrices we are
-      # # stuck with, otherwise we never finish.
+      # The following two ifs should just reduce the amount of matrices we are
+      # stuck with, otherwise we never finish.
       if(@result > 100){
          my $R = new Set<Matrix<Rational> >(@result);
          @result = @$R;
       }
-      # if(@result > 10){
-        print "Reducing polyhedra, ",scalar @result, "\n";
-        @result = map(new Polytope(INEQUALITIES=>$_), @result);
-        @result = inclusion_maximal_polyhedra(@result);
-        @result = map($_->INEQUALITIES, @result);
-        print "Reducing done, ",scalar @result, "\n";
-      # }
-      return @result;
+      @result = map(new Polytope(INEQUALITIES=>$_), @result);
+      @result = inclusion_maximal_polyhedra(@result);
+      @result = map($_->INEQUALITIES, @result);
    }
+   print "Step $step: The result contains ",scalar @result, " polyhedra.\n";
+   return @result;
 }
 
 sub simplify_gens{
@@ -301,7 +296,6 @@ sub get_clean_antifacets_list{
       my $aff = new Matrix<Rational>(primitive($cone->AFFINE_HULL));
       $facets = $facets / $aff / -$aff;
    }
-   print "Facets: ",$facets->rows,"\n";
    my $ezero = unit_vector<Rational>($facets->cols, 0);
    $facets = new Matrix(grep($_ != $ezero, @$facets));
    $facets = - new Matrix($facets);

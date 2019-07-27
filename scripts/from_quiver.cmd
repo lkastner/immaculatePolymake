@@ -44,7 +44,7 @@ for(my $i=0; $i<$fanRays->rows; $i++){
 # Remove {} for now..
 $A = new Array<Set<Int>>(@prob);
 $mat = transpose($incidenceMatrix)->minor(All, ~[$incidenceMatrix->rows-1]);
-@a = intersection_approach($A, new Matrix<Rational>($mat));
+@a = immaculate_locus_via_intersection($A, new Matrix<Rational>($mat));
 
 # Add one vertex in the middle
 application "fan";

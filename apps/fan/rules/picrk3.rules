@@ -4,7 +4,7 @@ sub rk3_everything{
    my $p3 = $b->dim;
    my $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
    my $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
-   my @a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+   my @a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
    my @bounded = grep($_->BOUNDED, @a);
    my @lines = grep(!$_->BOUNDED, @a);
    my @lpts = map($_->LATTICE_POINTS, @bounded);

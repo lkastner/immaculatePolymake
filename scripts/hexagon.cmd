@@ -17,7 +17,7 @@ $pi = null_space(transpose($rho_star));
 $pi = new Matrix<Rational>([[1,0,0,1,0,0],[0,1,0,0,1,0],[0,0,1,0,0,1],[1,-1,1,0,0,0]]);
 print $pi;
 $A = new Array<Set<Int>>(@prob);
-@a = intersection_approach($A, new Matrix<Rational>(transpose($pi)));
+@a = immaculate_locus_via_intersection($A, new Matrix<Rational>(transpose($pi)));
 @bounded = grep($_->BOUNDED, @a);
 @unbounded = grep(!$_->BOUNDED, @a);
 @lp = map($_->LATTICE_POINTS, @bounded);

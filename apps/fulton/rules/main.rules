@@ -1,3 +1,7 @@
+# @topic category methods/any/Algebraic Geometry
+# Properties from algebraic geometry.
+
+
 object TDivisor {
 
    property IMMACULATE : Bool;
@@ -6,6 +10,13 @@ object TDivisor {
 
 object NormalToricVariety {
 
+   # @category Algebraic Geometry
+   # Every divisor on a toric variety may be written as the difference of two
+   # nef divisors. This method returns such a decomposition. The decomposition
+   # is not unique.
+   # @param TDivisor The divisor to be decomposed
+   # @return perl Array of two TDivisors whose difference is linearly
+   #  equivalent to the given divisor.
    user_method decompose_into_nef_pair(TDivisor){
       my ($this, $d) = @_;
       my ($v1, $v2) = internal_decompose_into_nef($this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION, $this->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING, $this->NEF_CONE->FACETS, $d->COEFFICIENTS);
@@ -23,6 +34,19 @@ object NormalToricVariety {
       my $div1 = $this->DIVISOR(COEFFICIENTS=>$v1, temporary);
       my $div2 = $this->DIVISOR(COEFFICIENTS=>$v2, temporary);
       $this->DIVISOR->IMMACULATE = is_immaculate_pair($div1->SECTION_POLYTOPE, $div2->SECTION_POLYTOPE);
+   }
+
+   # @category Algebraic Geometry
+   # Returns the immaculate locus of a toric variety, i.e. the subset of all
+   # divisor classes that are immaculate.
+   user_method immaculate_locus {
+      my($this) = @_;
+      my $rho_star = $this->RAYS;
+      my $pi = $this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION;
+      my @prob = find_temptings($this);
+      my $A = new Array<Set<Int>>(@prob);
+      my @result = immaculate_locus_via_intersection($A, new Matrix<Rational>($pi));
+      return @result;
    }
 
 }
@@ -81,4 +105,5 @@ user_function kleinschmidt( Int , Vector<Int> ) {
    my $rays = new Matrix($Urays | $Vrays);
    return new NormalToricVariety(INPUT_RAYS=>transpose($rays), INPUT_CONES=>\@mc);
 }
+
 

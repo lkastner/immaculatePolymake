@@ -2,7 +2,7 @@ application "fulton";
 $tv = kleinschmidt(5,new Vector<Int>([2,3,4]));
 @prob = find_temptings($tv);
 $A = new Array<Set<Int>>(@prob);
-@a = intersection_approach($A, new Matrix<Rational>($tv->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION));
+@a = immaculate_locus_via_intersection($A, new Matrix<Rational>($tv->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION));
 
 $c = cube(2,10, -10);
 $l = $tv->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING;

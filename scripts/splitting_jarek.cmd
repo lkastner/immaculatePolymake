@@ -67,7 +67,7 @@ fulton > print $pi;
 1 2 -1
 
 fulton > $tempt = new Array<Set<Int>>(@a);
-fulton > @pp = intersection_approach($tempt, new Matrix<Rational>($pi));
+fulton > @pp = immaculate_locus_via_intersection($tempt, new Matrix<Rational>($pi));
 # One can see that the immaculate region is made of 17 polyhedra, probably some
 # can be reduced away. Last we check whether the divisor is contained in an
 # immaculate polyhedron:

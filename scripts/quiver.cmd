@@ -86,5 +86,5 @@ $M = new Matrix([
 [0,1, 0],
 [0,0, 1]]
 );
-@a = intersection_approach($A, $M);
+@a = immaculate_locus_via_intersection($A, $M);
 

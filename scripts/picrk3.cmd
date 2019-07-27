@@ -4,7 +4,7 @@ application "fan";
 $c = zero_vector(1);
 $pi = rk3_build_pi(1,1,1,1,1,$c, $c);
 $tempting = rk3_build_temptings(1,1,1,1,1);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 $s1 = new Polytope(POINTS=>[[1,-1,-1,-1]]);
 @b1 = map(minkowski_sum($s1, $_), @a);
 @a1 = ();
@@ -46,7 +46,7 @@ foreach my $p (@a2){
 $b = new Vector<Rational>([20]);
 $pi = rk3_build_pi(1,1,1,1,1,$c, $b);
 $tempting = rk3_build_temptings(1,1,1,1,1);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -71,7 +71,7 @@ print new Matrix(@lpts);
 $c = zero_vector(1);
 $pi = rk3_build_pi(1,1,1,1,2,$c, $c);
 $tempting = rk3_build_temptings(1,1,1,1,2);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -192,7 +192,7 @@ $b = new Vector([11]);
 $pi = rk3_build_pi(1,1,1,1,1,$c, $b);
 print $pi;
 $tempting = rk3_build_temptings(1,1,1,1,1);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -223,7 +223,7 @@ $b = new Vector([11]);
 $pi = rk3_build_pi(1,1,1,1,2,$c, $b);
 print $pi;
 $tempting = rk3_build_temptings(1,1,1,1,2);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -254,7 +254,7 @@ $b = new Vector([9]);
 $pi = rk3_build_pi(1,1,2,1,1,$c, $b);
 print $pi;
 $tempting = rk3_build_temptings(1,1,2,1,1);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -285,7 +285,7 @@ $b = new Vector([1,9]);
 $pi = rk3_build_pi(1,1,2,2,1,$c, $b);
 print $pi;
 $tempting = rk3_build_temptings(1,1,2,2,1);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 foreach my $a (@a){
    print "Dim: ", $a->DIM,"\n";
    print "LinDim: ", $a->LINEALITY_DIM,"\n";
@@ -330,7 +330,7 @@ $p2 = $c->dim;
 $p3 = $b->dim;
 $pi = rk3_build_pi($p0,$p1,$p2,$p3,$p4,$c, $b);
 $tempting = rk3_build_temptings($p0,$p1,$p2,$p3,$p4);
-@a = intersection_approach($tempting, transpose(new Matrix<Rational>($pi)));
+@a = immaculate_locus_via_intersection($tempting, transpose(new Matrix<Rational>($pi)));
 @bounded = grep($_->BOUNDED, @a);
 @lines = grep(!$_->BOUNDED, @a);
 @test = group_lines(@lines);
