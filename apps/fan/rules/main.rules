@@ -65,17 +65,17 @@ sub shiftByVector{
    return minkowski_sum($Pv, $Q);
 }
 
-user_function isImmaculatePair(Polytope, Polytope){
+user_function is_immaculate_pair(Polytope, Polytope){
    my($P, $Q) = @_;
    my $shifts = findPolytopeOfRelevantShifts($Q, $P);
    $shifts = $shifts->LATTICE_POINTS;
    foreach my $shift (@$shifts){
       my $check = isInImmaculatePosition($P, shiftByVector($shift, $Q));
       if(!$check){
-         return 0;
+         return false;
       }
    }
-   return 1;
+   return true;
 }
 
 user_function isContained(Polytope, Polytope){
@@ -100,7 +100,7 @@ user_function immaculacyMatrix(Polytope, Polytope, $ , $ ){
    for (my $i=0; $i < $a; $i++){
       my $Pi = scale_wrap($P, $i);
       for (my $j =0; $j <$b; $j++){
-         $result->elem($i,$j)=isImmaculatePair($Pi,$qs{$j});
+         $result->elem($i,$j)=is_immaculate_pair($Pi,$qs{$j});
       }
    }
    return $result;

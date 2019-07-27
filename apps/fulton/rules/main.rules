@@ -6,41 +6,51 @@ object TDivisor {
 
 object NormalToricVariety {
 
-   rule DIVISOR.IMMACULATE : DIVISOR.COEFFICIENTS, NEF_CONE, RATIONAL_DIVISOR_CLASS_GROUP.PROJECTION, RATIONAL_DIVISOR_CLASS_GROUP.LIFTING {
-      # Get coefficients
-      my $v = $this->DIVISOR->COEFFICIENTS;
-
-      # Decompose divisor into two nef divisors:
-      # Project to class (Picard) group
-      my $pi = transpose($this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION);
-      my $pv = $pi * $v;
-      my $n = $pv->dim;
-      # Construct polytope of all ($pv1, $pv2) with
-      # - $pv1, $pv2 nef
-      # - $pv1 - $pv2 = $v
-      my $nef = $this->NEF_CONE;
-      my $A = $nef->FACETS;
-      my $B = (-$pv) | unit_matrix($n) | -unit_matrix($n);
-      $B = dense($B);
-      my $AA = zero_vector(2*$A->rows) | ($A / zero_matrix($A->rows, $A->cols));
-      my $AAA = $AA | (zero_matrix($A->rows, $A->cols) / $A);
-      my $P = new Polytope(INEQUALITIES=>$AAA, EQUATIONS=>$B);
-      # Extract one solution
-      my $pvv = new Vector<Rational>($P->LATTICE_POINTS_GENERATORS->[0]->[0]);
-      my $pv1 = $pvv->slice(range(1,$pv->dim));
-      my $pv2 = $pvv->slice(range(1+$pv->dim, 2*$pv->dim));
-      # Lift $pv1 and $pv2 to Weil divisor group
-      my $lift = transpose($this->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING);
-      my $v1 = $lift * $pv1;
-      my $v2 = $lift * $pv2;
+   user_method decompose_into_nef_pair(TDivisor){
+      my ($this, $d) = @_;
+      my ($v1, $v2) = internal_decompose_into_nef($this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION, $this->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING, $this->NEF_CONE->FACETS, $d->COEFFICIENTS);
       
-      # Construct actual nef divisors, assign to toric variety temporarily.
-      my $div1 = $this->DIVISOR(COEFFICIENTS=>$v1, temporary);
-      my $div2 = $this->DIVISOR(COEFFICIENTS=>$v2, temporary);
-
-      $this->DIVISOR->IMMACULATE = isImmaculatePair($div1->SECTION_POLYTOPE, $div2->SECTION_POLYTOPE);
+      # Construct actual nef divisors, assign to toric variety.
+      my $div1 = $this->DIVISOR(COEFFICIENTS=>$v1);
+      my $div2 = $this->DIVISOR(COEFFICIENTS=>$v2);
+      return ($div1, $div2);
    }
 
+   rule DIVISOR.IMMACULATE : DIVISOR.COEFFICIENTS, NEF_CONE, RATIONAL_DIVISOR_CLASS_GROUP.PROJECTION, RATIONAL_DIVISOR_CLASS_GROUP.LIFTING {
+      # Get coefficients
+      my ($v1, $v2) = internal_decompose_into_nef($this->RATIONAL_DIVISOR_CLASS_GROUP->PROJECTION, $this->RATIONAL_DIVISOR_CLASS_GROUP->LIFTING, $this->NEF_CONE->FACETS, $this->DIVISOR->COEFFICIENTS);
+      # Little workaround, since computing properties of the divisors is forbidden.
+      my $div1 = $this->DIVISOR(COEFFICIENTS=>$v1, temporary);
+      my $div2 = $this->DIVISOR(COEFFICIENTS=>$v2, temporary);
+      $this->DIVISOR->IMMACULATE = is_immaculate_pair($div1->SECTION_POLYTOPE, $div2->SECTION_POLYTOPE);
+   }
+
+}
+
+sub internal_decompose_into_nef {
+   my($projection, $lifting, $nefFacets, $coeffs) = @_;
+   # Decompose divisor into two nef divisors:
+   # Project to class (Picard) group
+   my $pi = transpose($projection);
+   my $pv = $pi * $coeffs;
+   my $n = $pv->dim;
+   # Construct polytope of all ($pv1, $pv2) with
+   # - $pv1, $pv2 nef
+   # - $pv1 - $pv2 = $coeffs
+   my $B = (-$pv) | unit_matrix($n) | -unit_matrix($n);
+   $B = dense($B);
+   my $AA = zero_vector(2*$nefFacets->rows) | ($nefFacets / zero_matrix($nefFacets->rows, $nefFacets->cols));
+   my $AAA = $AA | (zero_matrix($nefFacets->rows, $nefFacets->cols) / $nefFacets);
+   my $P = new Polytope(INEQUALITIES=>$AAA, EQUATIONS=>$B);
+   # Extract one solution
+   my $pvv = new Vector<Rational>($P->LATTICE_POINTS_GENERATORS->[0]->[0]);
+   my $pv1 = $pvv->slice(range(1,$pv->dim));
+   my $pv2 = $pvv->slice(range(1+$pv->dim, 2*$pv->dim));
+   # Lift $pv1 and $pv2 to Weil divisor group
+   my $lift = transpose($lifting);
+   my $v1 = $lift * $pv1;
+   my $v2 = $lift * $pv2;
+   return ($v1, $v2);
 }
 
 # @category Producing a normal toric variety

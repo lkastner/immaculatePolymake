@@ -9,12 +9,52 @@ bundle ``immaculate'') in a purely combinatorial manner.
 
 
 
-## Usage
+## Installation
 First clone the git into a directory. Then open polymake and
 ```
 import_extension("/path/to/git/folder");
 ```
-For examples how to compute things with this extension, please have a look at the `scripts` folder.
+Most of the functionality is added to the toric application of polymake. This
+application is named `fulton`. Before starting, switch to this application with
+```
+application "fulton";
+```
+The basic usage is explained below. For further examples, please have a look at
+the `scripts` folder. This folder also contains the computations of the
+article.
+
+## Usage
+
+### Immaculacy of divisors
+One can determine directly, whether a divisor is immaculate, using the
+`IMMACULATE` property introduced in the extension.
+```
+fulton > $tv = projective_space(3);
+
+fulton > $d = $tv->DIVISOR(COEFFICIENTS=>[-1,-1,-1,-1]);
+
+fulton > print $d->IMMACULATE;
+false
+
+```
+As an intermediate step, one can determine the decomposition of a divisor into
+nef divisors in the following way:
+```
+fulton > $tv = projective_space(3);
+
+fulton > $d = $tv->DIVISOR(COEFFICIENTS=>[-1,-1,-1,-1]);
+
+fulton > ($d1, $d2) = $tv->decompose_into_nef_pair($d);
+
+fulton > print $d1->COEFFICIENTS;
+0 0 0 0
+fulton > print $d2->COEFFICIENTS;
+4 0 0 0
+fulton > print is_immaculate_pair($d1->SECTION_POLYTOPE, $d2->SECTION_POLYTOPE);
+false
+```
+In the end, one can use `is_immaculate_pair` to determine immaculacy of a pair
+of divisors.
 
 
 ## References
